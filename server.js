@@ -61,6 +61,7 @@ const server = http.createServer(async (req, res) => {
       if (!id) return json(res, 400, { error: 'Maç kimliği gerekli' });
       return json(res, 200, await getAnalysis(id, url.searchParams.get('refresh') === '1'));
     }
+    if (url.pathname === '/api/coupon' && req.method === 'GET') return json(res, 200, await buildCoupon());
     if (url.pathname === '/api/health') return json(res, 200, { ok: true });
     serveStatic(url.pathname, res);
   } catch (error) {
@@ -137,6 +138,12 @@ async function getAnalysis(id, refresh) {
   const result = buildAnalysis({ fixture, homeFixtures: homeFixtures.response, awayFixtures: awayFixtures.response, h2h: h2h.response, injuries: injuries.response, homePlayers: summarizePlayers(playerResponses, hid), awayPlayers: summarizePlayers(playerResponses, aid) });
   result.recommendation = makeRecommendation({...result,injuriesAvailable:true});
   fs.mkdirSync(ANALYSIS_DIR, { recursive: true }); fs.writeFileSync(file, JSON.stringify(result, null, 2)); return result;
+}
+async function buildCoupon(){
+  const data=await getMatches(false),matches=data.matches.filter(x=>new Date(x.date).getTime()>=Date.now()-3*60*60*1000),rows=[];
+  for(let i=0;i<matches.length;i+=3){const batch=matches.slice(i,i+3);const results=await Promise.all(batch.map(async match=>{try{return{match,analysis:await getAnalysis(match.id,false)}}catch(error){return{match,error:error.message}}}));rows.push(...results)}
+  const candidates=rows.flatMap(({match,analysis})=>{if(!analysis?.recommendation?.primary)return[];const p=analysis.recommendation.primary,dataConfidence=Number(analysis.scores?.confidence||0),h2h=Math.min(Number(analysis.h2h?.played||0),8),lineupBonus=analysis.lineup?.confirmed?4:0,sourceBonus=(analysis.sources?.length||0)>=2?3:0;const confidence=Math.round(p.confidence*.62+dataConfidence*.28+h2h*.5+lineupBonus+sourceBonus);if(p.confidence<62||dataConfidence<65||confidence<67)return[];return[{matchId:match.id,home:match.home,away:match.away,date:match.date,selection:p.market,confidence:Math.min(confidence,89),reason:p.reason,lineupConfirmed:Boolean(analysis.lineup?.confirmed),sources:(analysis.sources||[]).map(x=>x.name)}]}).sort((a,b)=>b.confidence-a.confidence).slice(0,5);
+  return{generatedAt:new Date().toISOString(),analyzed:rows.length,picks:candidates,complete:candidates.length===5,headline:candidates.length?`En güçlü ${candidates.length} seçim bulundu`:'Güven eşiğini geçen maç bulunamadı',warning:'Kesin kazanan maç yoktur. Liste yalnızca mevcut verilerde en güçlü istatistiksel seçimleri gösterir; 5 seçimi doldurmak için eşik düşürülmez.'};
 }
 async function getFreeMatches(previousWarnings=[]) { try { const matches=await fetchTffMatches();const payload={source:'tff-sportscore',updatedAt:new Date().toISOString(),matches,warnings:previousWarnings};fs.mkdirSync(path.dirname(CACHE_FILE),{recursive:true});fs.writeFileSync(CACHE_FILE,JSON.stringify(payload,null,2));return payload; } catch(error) { return {source:'demo',updatedAt:new Date().toISOString(),matches:demoMatches,warnings:[...previousWarnings,error.message]}; } }
 function demoAnalysis(id) {

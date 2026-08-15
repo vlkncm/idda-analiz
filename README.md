@@ -4,7 +4,11 @@ Windows için veri odaklı futbol maç analiz uygulaması.
 
 ## Kurulum
 
-GitHub Releases bölümündeki `IDDA-Analiz-Merkezi-Kurulum-1.0.0.exe` dosyasını indirin ve çalıştırın. Kurulum sihirbazı masaüstü ve Başlat menüsü kısayollarını oluşturur. Kurulum istemeyen kullanım için taşınabilir sürüm de yayımlanmaktadır.
+GitHub Releases bölümündeki `IDDA-Analiz-Merkezi-Kurulum-1.1.0.exe` dosyasını indirin ve çalıştırın. Kurulum sihirbazı masaüstü ve Başlat menüsü kısayollarını oluşturur. Kurulum istemeyen kullanım için taşınabilir sürüm de yayımlanmaktadır.
+
+## Tek tuşla kupon
+
+`Tek tuşla kupon hazırla` düğmesi haftadaki bütün maçları analiz eder, sıkı güven eşiğini geçen farklı maçlardan en fazla beş seçim gösterir. Eşiği geçen maç sayısı beşten azsa liste zorla tamamlanmaz. İstatistiksel analiz sonuç veya kazanç garantisi değildir.
 
 Süper Lig haftalık karşılaşmalarını TFF ve SportScore verileriyle inceleyen yerel web uygulaması. Avrupa ligleri için sağlayıcı bağlantıları geliştirme aşamasındadır.
 
