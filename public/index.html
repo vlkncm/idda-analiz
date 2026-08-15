@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>İDDA Analiz Merkezi</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brandmark">İA</span><span>İDDA <b>ANALİZ</b><small>VERİ ODAKLI MAÇ MERKEZİ</small></span></a>
+    <div class="status"><i></i><span id="sourceStatus">Veriler yükleniyor</span><button id="settingsButton" class="settings-button">⚙ Ayarlar</button></div>
+  </header>
+  <main>
+    <section class="hero">
+      <div><p class="eyebrow">HAFTALIK KARŞILAŞMALAR</p><h1>Veriyi oku.<br><em>Riski yönet.</em></h1><p>Altı büyük ligden form, gol eğilimi, saha avantajı ve kadro etkilerini tek ekranda karşılaştır.</p></div>
+      <div class="hero-stat"><strong id="matchCount">—</strong><span>MAÇ</span><small>Önümüzdeki 7 gün</small></div>
+    </section>
+    <section class="toolbar">
+      <div id="leagueFilters" class="filters"></div>
+      <button id="refresh" class="refresh">↻ Verileri yenile</button>
+    </section>
+    <div class="notice" id="notice"></div>
+    <section class="summary">
+      <article><span>En güçlü ev sahibi</span><strong id="bestHome">—</strong></article>
+      <article><span>En yüksek gol eğilimi</span><strong id="bestGoals">—</strong></article>
+      <article><span>Ortalama güven</span><strong id="avgConfidence">—</strong></article>
+    </section>
+    <section><div class="section-title"><h2>Maç analizleri</h2><span id="updatedAt"></span></div><div id="matches" class="match-grid"></div></section>
+    <p class="disclaimer">Bu uygulama istatistiksel değerlendirme sunar; sonuç veya kazanç garantisi vermez. Bahis finansal risk içerir.</p>
+  </main>
+  <dialog id="detailDialog"><button class="close" aria-label="Kapat">×</button><div id="dialogContent"></div></dialog>
+  <dialog id="settingsDialog"><button class="settings-close close" aria-label="Kapat">×</button><h2>Veri kaynağı</h2><p class="detail-meta">Ücretsiz API-Football anahtarınızı girin. Anahtar yalnızca bu bilgisayarda saklanır.</p><label class="key-label">API anahtarı<input id="apiKey" type="password" autocomplete="off" placeholder="API-Football anahtarı"></label><button id="saveSettings" class="save">Kaydet ve bağlan</button><p id="settingsMessage" class="detail-meta"></p></dialog>
+  <script src="/app.js"></script>
+</body>
+</html>

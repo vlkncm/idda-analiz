@@ -1,0 +1,36 @@
+{
+  "name": "idda-analiz",
+  "version": "1.0.0",
+  "description": "Süper Lig ve büyük Avrupa ligleri için veri odaklı maç analiz uygulaması",
+  "author": "vlkncm",
+  "private": true,
+  "main": "electron.js",
+  "scripts": {
+    "start": "node server.js",
+    "desktop": "electron .",
+    "test": "node --test",
+    "build": "electron-builder --win nsis portable"
+  },
+  "devDependencies": {
+    "electron": "43.4.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "tr.idda.analiz",
+    "productName": "IDDA Analiz Merkezi",
+    "asar": true,
+    "files": ["server.js", "analyzer.js", "free-provider.js", "enrichment-provider.js", "electron.js", "public/**/*", "package.json"],
+    "directories": { "output": "dist" },
+    "win": { "target": ["nsis", "portable"] },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "IDDA Analiz Merkezi",
+      "artifactName": "IDDA-Analiz-Merkezi-Kurulum-${version}.${ext}"
+    },
+    "portable": { "artifactName": "IDDA-Analiz-Merkezi-Tasinabilir-${version}.${ext}" }
+  },
+  "engines": { "node": ">=20" }
+}
