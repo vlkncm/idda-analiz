@@ -10,6 +10,8 @@ GitHub Releases bölümündeki `IDDA-Analiz-Merkezi-Kurulum-1.1.0.exe` dosyasın
 
 `Tek tuşla kupon hazırla` düğmesi haftadaki bütün maçları analiz eder, sıkı güven eşiğini geçen farklı maçlardan en fazla beş seçim gösterir. Eşiği geçen maç sayısı beşten azsa liste zorla tamamlanmaz. İstatistiksel analiz sonuç veya kazanç garantisi değildir.
 
+Muhtemel maç sonucu standart olarak `1 = ev sahibi galibiyeti`, `0 = beraberlik`, `2 = deplasman galibiyeti` biçiminde gösterilir. Yüzde değeri istatistiksel güveni ifade eder; kesin sonuç garantisi değildir.
+
 `Sürpriz kupon` düğmesi ana kupona girmeyen dengeli maçlar, beraberlikler ve sınırdaki gol göstergelerinden en fazla üç yüksek riskli seçim üretir. Oran verisi kullanılmadığı için yüksek oran iddiası taşımaz.
 
 Süper Lig haftalık karşılaşmalarını TFF ve SportScore verileriyle inceleyen yerel web uygulaması. Avrupa ligleri için sağlayıcı bağlantıları geliştirme aşamasındadır.

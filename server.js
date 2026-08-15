@@ -2,7 +2,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { URL } = require('node:url');
-const { buildAnalysis, summarizePlayers, makeRecommendation } = require('./analyzer');
+const { buildAnalysis, summarizePlayers, makeRecommendation, predictMatchResult } = require('./analyzer');
 const { fetchTffMatches, freeAnalysis } = require('./free-provider');
 const { enrichMatch } = require('./enrichment-provider');
 
@@ -122,10 +122,10 @@ function apiKey() { try { return JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8
 async function readBody(req) { let raw = ''; for await (const chunk of req) { raw += chunk; if (raw.length > 10000) throw new Error('İstek çok büyük'); } return raw ? JSON.parse(raw) : {}; }
 async function getAnalysis(id, refresh) {
   if (String(id).startsWith('free-')) { const data=readCache();const match=data?.matches?.find(x=>String(x.id)===String(id));if(!match)throw new Error('Maç önbellekte bulunamadı');const [result,enrichment]=await Promise.all([freeAnalysis(match),enrichMatch(match)]);result.injuries=enrichment.injuries;result.lineup=enrichment.lineup;result.currentReferee=enrichment.referee;result.sources=enrichment.sources;result.enrichmentErrors=enrichment.errors;result.recommendation=makeRecommendation({...result,injuriesAvailable:enrichment.sources.some(x=>x.fields.includes('Sakat/cezalı'))});return result; }
-  if (!apiKey()) return demoAnalysis(id);
+  if (!apiKey()) { const demo=demoAnalysis(id);demo.predictedResult=predictMatchResult(demo);return demo; }
   const safeId = String(id).replace(/\D/g, '');
   const file = path.join(ANALYSIS_DIR, `${safeId}.json`);
-  if (!refresh && fs.existsSync(file)) { const cached = JSON.parse(fs.readFileSync(file, 'utf8')); if (Date.now() - new Date(cached.generatedAt).getTime() < CACHE_MINUTES * 60000) return cached; }
+  if (!refresh && fs.existsSync(file)) { const cached = JSON.parse(fs.readFileSync(file, 'utf8')); if (Date.now() - new Date(cached.generatedAt).getTime() < CACHE_MINUTES * 60000) { cached.predictedResult ||= predictMatchResult(cached); return cached; } }
   const fixture = (await api(`/fixtures?id=${safeId}`)).response[0];
   if (!fixture) throw new Error('Maç bulunamadı');
   const hid = fixture.teams.home.id, aid = fixture.teams.away.id;
