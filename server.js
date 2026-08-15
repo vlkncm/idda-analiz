@@ -61,7 +61,7 @@ const server = http.createServer(async (req, res) => {
       if (!id) return json(res, 400, { error: 'Maç kimliği gerekli' });
       return json(res, 200, await getAnalysis(id, url.searchParams.get('refresh') === '1'));
     }
-    if (url.pathname === '/api/coupon' && req.method === 'GET') return json(res, 200, await buildCoupon());
+    if (url.pathname === '/api/coupon' && req.method === 'GET') return json(res, 200, await buildCoupon(url.searchParams.get('type')==='surprise'));
     if (url.pathname === '/api/health') return json(res, 200, { ok: true });
     serveStatic(url.pathname, res);
   } catch (error) {
@@ -139,9 +139,14 @@ async function getAnalysis(id, refresh) {
   result.recommendation = makeRecommendation({...result,injuriesAvailable:true});
   fs.mkdirSync(ANALYSIS_DIR, { recursive: true }); fs.writeFileSync(file, JSON.stringify(result, null, 2)); return result;
 }
-async function buildCoupon(){
+async function analyzeCouponMatches(){
   const data=await getMatches(false),matches=data.matches.filter(x=>new Date(x.date).getTime()>=Date.now()-3*60*60*1000),rows=[];
   for(let i=0;i<matches.length;i+=3){const batch=matches.slice(i,i+3);const results=await Promise.all(batch.map(async match=>{try{return{match,analysis:await getAnalysis(match.id,false)}}catch(error){return{match,error:error.message}}}));rows.push(...results)}
+  return rows;
+}
+async function buildCoupon(surprise=false){
+  const rows=await analyzeCouponMatches();
+  if(surprise){const candidates=rows.flatMap(({match,analysis})=>{if(!analysis?.scores||Number(analysis.scores.confidence)<65||Number(analysis.h2h?.played||0)<3)return[];const s=analysis.scores,options=[];if(s.homeAdvantage>=45&&s.homeAdvantage<=55)options.push({selection:'Maç sonucu X',confidence:Math.round(59-Math.abs(50-s.homeAdvantage)*.8),reason:`Ev/deplasman dengesi %${s.homeAdvantage}–%${100-s.homeAdvantage}; beraberlik sürprizi değerlendirildi.`});if(s.homeAdvantage>=56&&s.homeAdvantage<=63)options.push({selection:'Maç sonucu 1',confidence:Math.round(s.homeAdvantage-3),reason:`Ev sahibi yönü %${s.homeAdvantage}; daha riskli doğrudan galibiyet seçildi.`});if(s.homeAdvantage>=37&&s.homeAdvantage<=44)options.push({selection:'Maç sonucu 2',confidence:Math.round(97-s.homeAdvantage),reason:`Deplasman yönü %${100-s.homeAdvantage}; daha riskli doğrudan galibiyet seçildi.`});if(s.over25>=54&&s.over25<62)options.push({selection:'2,5 Üst',confidence:s.over25,reason:`Gol eğilimi sınırda: %${s.over25}.`});if(s.btts>=54&&s.btts<62)options.push({selection:'KG Var',confidence:s.btts,reason:`Karşılıklı gol eğilimi sınırda: %${s.btts}.`});const pick=options.sort((a,b)=>b.confidence-a.confidence)[0];return pick?[{matchId:match.id,home:match.home,away:match.away,date:match.date,...pick,lineupConfirmed:Boolean(analysis.lineup?.confirmed),sources:(analysis.sources||[]).map(x=>x.name)}]:[]}).sort((a,b)=>b.confidence-a.confidence).slice(0,3);return{type:'surprise',generatedAt:new Date().toISOString(),analyzed:rows.length,picks:candidates,complete:candidates.length===3,headline:candidates.length?`${candidates.length} sürpriz seçim bulundu`:'Uygun sürpriz seçim bulunamadı',warning:'Sürpriz kupon yüksek risklidir ve oran verisi kullanılmaz. Toplam en fazla 0,25 birim düşün; sonuç veya kazanç garantisi yoktur.'};}
   const candidates=rows.flatMap(({match,analysis})=>{if(!analysis?.recommendation?.primary)return[];const p=analysis.recommendation.primary,dataConfidence=Number(analysis.scores?.confidence||0),h2h=Math.min(Number(analysis.h2h?.played||0),8),lineupBonus=analysis.lineup?.confirmed?4:0,sourceBonus=(analysis.sources?.length||0)>=2?3:0;const confidence=Math.round(p.confidence*.62+dataConfidence*.28+h2h*.5+lineupBonus+sourceBonus);if(p.confidence<62||dataConfidence<65||confidence<67)return[];return[{matchId:match.id,home:match.home,away:match.away,date:match.date,selection:p.market,confidence:Math.min(confidence,89),reason:p.reason,lineupConfirmed:Boolean(analysis.lineup?.confirmed),sources:(analysis.sources||[]).map(x=>x.name)}]}).sort((a,b)=>b.confidence-a.confidence).slice(0,5);
   return{generatedAt:new Date().toISOString(),analyzed:rows.length,picks:candidates,complete:candidates.length===5,headline:candidates.length?`En güçlü ${candidates.length} seçim bulundu`:'Güven eşiğini geçen maç bulunamadı',warning:'Kesin kazanan maç yoktur. Liste yalnızca mevcut verilerde en güçlü istatistiksel seçimleri gösterir; 5 seçimi doldurmak için eşik düşürülmez.'};
 }
