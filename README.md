@@ -4,7 +4,14 @@ Windows için veri odaklı futbol maç analiz uygulaması.
 
 ## Kurulum
 
-GitHub Releases bölümündeki `IDDA-Analiz-Merkezi-Kurulum-1.1.0.exe` dosyasını indirin ve çalıştırın. Kurulum sihirbazı masaüstü ve Başlat menüsü kısayollarını oluşturur. Kurulum istemeyen kullanım için taşınabilir sürüm de yayımlanmaktadır.
+GitHub Releases bölümündeki `IDDA-Analiz-Merkezi-Kurulum-1.2.1.exe` dosyasını indirin ve çalıştırın. Kurulum sihirbazı masaüstü ve Başlat menüsü kısayollarını oluşturur. Kurulum istemeyen kullanım için taşınabilir sürüm de yayımlanmaktadır.
+
+## v1.2.1 yabancı lig veri bağlantısı
+
+- Ayarlar düğmesi görünürdür; kaydedilen API-Football anahtarı yabancı lig sorgularını otomatik etkinleştirir.
+- Premier League, La Liga, Bundesliga, Serie A ve Ligue 1 fikstürleri API-Football üzerinden alınır.
+- Anahtar yoksa uygulama yalnızca ücretsiz TFF/Süper Lig verisini gösterdiğini açıkça belirtir.
+- Bir lig veya veri isteği başarısız olursa hata arayüzde görünür; sessizce boş liste gösterilmez.
 
 ## Tek tuşla kupon
 
@@ -14,7 +21,7 @@ Muhtemel maç sonucu standart olarak `1 = ev sahibi galibiyeti`, `0 = beraberlik
 
 `Sürpriz kupon` düğmesi ana kupona girmeyen dengeli maçlar, beraberlikler ve sınırdaki gol göstergelerinden en fazla üç yüksek riskli seçim üretir. Oran verisi kullanılmadığı için yüksek oran iddiası taşımaz.
 
-Süper Lig haftalık karşılaşmalarını TFF ve SportScore verileriyle inceleyen yerel web uygulaması. Avrupa ligleri için sağlayıcı bağlantıları geliştirme aşamasındadır.
+Süper Lig haftalık karşılaşmalarını TFF ve SportScore verileriyle, beş büyük Avrupa ligini API-Football verileriyle inceleyen yerel uygulama.
 
 ## Çalıştırma
 
@@ -26,7 +33,7 @@ Herhangi bir paket kurulumu gerekmez. Node.js 20 veya daha yeni bir sürüm yete
 
 ## Veri kaynakları
 
-Güncel Süper Lig fikstürü TFF'nin resmî sayfasından, takım geçmişi ve performans verileri SportScore ücretsiz API'sinden alınır. API anahtarı gerekmez. SportScore kullanım şartı gereği arayüzde kaynak bağlantısı gösterilir.
+Güncel Süper Lig fikstürü TFF'nin resmî sayfasından, takım geçmişi ve performans verileri SportScore ücretsiz API'sinden alınır. Bu kullanım için API anahtarı gerekmez. Beş büyük Avrupa ligi için Ayarlar bölümüne API-Football anahtarı girilmelidir. SportScore kullanım şartı gereği arayüzde kaynak bağlantısı gösterilir.
 
 Ücretsiz planın günlük kotasını korumak için yanıtlar varsayılan olarak 6 saat önbelleğe alınır. `Verileri yenile` düğmesi önbelleği atlar ve altı API isteği kullanır.
 

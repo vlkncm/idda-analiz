@@ -16,8 +16,17 @@ async function loadMatches(refresh = false) {
     state.matches = data.matches; state.source = data.source;
     $('#sourceStatus').textContent = data.source === 'demo' ? 'Demo veri modu' : data.source === 'tff-sportscore' ? 'TFF + SportScore bağlı' : 'API-Football bağlı';
     $('#updatedAt').textContent = `Güncelleme: ${new Date(data.updatedAt).toLocaleString('tr-TR')}`;
-    $('#notice').classList.toggle('show', data.source === 'demo' || data.source === 'tff-sportscore');
-    $('#notice').innerHTML = data.source === 'tff-sportscore' ? 'Güncel Süper Lig fikstürü TFF’den, performans verileri SportScore’dan alınıyor. <a href="https://sportscore.com/" target="_blank" style="color:inherit">Powered by SportScore</a>' : 'Demo modu açık. Veri kaynaklarına erişim kontrol edilmeli.';
+    const warnings = Array.isArray(data.warnings) ? data.warnings.filter(Boolean) : [];
+    $('#notice').classList.toggle('show', data.source === 'demo' || data.source === 'tff-sportscore' || warnings.length > 0);
+    if (warnings.length) {
+      $('#notice').textContent = `Bazı liglerin verisi alınamadı: ${warnings.join(' · ')}`;
+    } else if (data.source === 'tff-sportscore') {
+      $('#notice').innerHTML = 'API anahtarı girilmediği için yalnızca Süper Lig gösteriliyor. Ayarlar’dan API-Football anahtarını kaydedebilirsiniz. <a href="https://sportscore.com/" target="_blank" style="color:inherit">Powered by SportScore</a>';
+    } else if (data.source === 'demo') {
+      $('#notice').textContent = 'Demo modu açık. Veri kaynaklarına erişim kontrol edilmeli.';
+    } else {
+      $('#notice').textContent = '';
+    }
     render();
   } catch (e) { $('#notice').classList.add('show'); $('#notice').textContent = e.message; }
   finally { $('#refresh').disabled = false; }

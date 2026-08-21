@@ -71,8 +71,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 async function getMatches(forceRefresh) {
-  if (process.env.USE_API_FOOTBALL !== 'true') return getFreeMatches();
-  if (!apiKey()) return getFreeMatches();
+  if (!shouldUseApiFootball(apiKey())) return getFreeMatches();
   const cached = readCache();
   if (!forceRefresh && cached?.matches?.length && Date.now() - new Date(cached.updatedAt).getTime() < CACHE_MINUTES * 60000) return cached;
 
@@ -119,6 +118,7 @@ function serveStatic(requestPath, res) {
 
 function readCache() { try { return JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8')); } catch { return null; } }
 function apiKey() { try { return JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8')).apiKey || process.env.API_FOOTBALL_KEY || ''; } catch { return process.env.API_FOOTBALL_KEY || ''; } }
+function shouldUseApiFootball(key, flag = process.env.USE_API_FOOTBALL) { return Boolean(String(key || '').trim()) && flag !== 'false'; }
 async function readBody(req) { let raw = ''; for await (const chunk of req) { raw += chunk; if (raw.length > 10000) throw new Error('İstek çok büyük'); } return raw ? JSON.parse(raw) : {}; }
 async function getAnalysis(id, refresh) {
   if (String(id).startsWith('free-')) { const data=readCache();const match=data?.matches?.find(x=>String(x.id)===String(id));if(!match)throw new Error('Maç önbellekte bulunamadı');const [result,enrichment]=await Promise.all([freeAnalysis(match),enrichMatch(match)]);result.injuries=enrichment.injuries;result.lineup=enrichment.lineup;result.currentReferee=enrichment.referee;result.sources=enrichment.sources;result.enrichmentErrors=enrichment.errors;result.recommendation=makeRecommendation({...result,injuriesAvailable:enrichment.sources.some(x=>x.fields.includes('Sakat/cezalı'))});return result; }
@@ -166,4 +166,4 @@ if (require.main === module) {
 }
 
 function startServer(port = PORT) { return new Promise((resolve, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', () => resolve(server.address().port)); }); }
-module.exports = { seasonFor, leagues, startServer, server };
+module.exports = { seasonFor, leagues, shouldUseApiFootball, startServer, server };
