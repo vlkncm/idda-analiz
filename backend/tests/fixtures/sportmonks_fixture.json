@@ -1,0 +1,32 @@
+{
+  "id": 19424997,
+  "league_id": 8,
+  "season_id": 25583,
+  "starting_at": "2026-08-23 18:30:00",
+  "result_info": "Home won after full-time.",
+  "has_odds": true,
+  "state": {"developer_name": "FT"},
+  "participants": [
+    {"id": 10, "name": "Home FC", "meta": {"location": "home"}},
+    {"id": 20, "name": "Away FC", "meta": {"location": "away"}}
+  ],
+  "scores": [
+    {"description": "CURRENT", "score": {"goals": 2, "participant": "home"}},
+    {"description": "CURRENT", "score": {"goals": 1, "participant": "away"}}
+  ],
+  "statistics": [
+    {"participant_id": 10, "data": {"value": 13}, "type": {"developer_name": "SHOTS_TOTAL"}},
+    {"participant_id": 20, "data": {"value": 4}, "type": {"developer_name": "SHOTS_ON_TARGET"}},
+    {"participant_id": 10, "data": {"value": "57%"}, "type": {"developer_name": "BALL_POSSESSION"}}
+  ],
+  "expected": [
+    {"participant_id": 10, "data": {"value": 1.84}, "location": "home"},
+    {"participant_id": 20, "data": {"value": 0.92}, "location": "away"}
+  ],
+  "lineups": [
+    {"player_id": 101, "team_id": 10, "position_id": 27, "formation_position": 9, "player_name": "Home Striker", "jersey_number": 9}
+  ],
+  "sidelined": [
+    {"player_id": 202, "team_id": 20, "player": {"id": 202, "name": "Away Defender"}, "sideline": {"name": "Hamstring Injury", "category": "injury"}}
+  ]
+}

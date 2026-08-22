@@ -4,6 +4,8 @@ const path = require('node:path');
 const { URL } = require('node:url');
 const { buildAnalysis, summarizePlayers, makeRecommendation, predictMatchResult } = require('./analyzer');
 const { fetchTffMatches, freeAnalysis } = require('./free-provider');
+const { fetchInternationalMatches } = require('./international-provider');
+const { internationalAnalysis } = require('./international-analysis-provider');
 const { enrichMatch } = require('./enrichment-provider');
 
 loadEnv();
@@ -61,7 +63,11 @@ const server = http.createServer(async (req, res) => {
       if (!id) return json(res, 400, { error: 'Maç kimliği gerekli' });
       return json(res, 200, await getAnalysis(id, url.searchParams.get('refresh') === '1'));
     }
-    if (url.pathname === '/api/coupon' && req.method === 'GET') return json(res, 200, await buildCoupon(url.searchParams.get('type')==='surprise'));
+    if (url.pathname === '/api/coupon' && req.method === 'GET') {
+      const league = url.searchParams.get('league') || 'all';
+      if (league !== 'all' && !leagues.some(item => String(item.id) === league)) return json(res, 400, { error: 'Geçersiz lig' });
+      return json(res, 200, await buildCoupon(url.searchParams.get('type') === 'surprise', league));
+    }
     if (url.pathname === '/api/health') return json(res, 200, { ok: true });
     serveStatic(url.pathname, res);
   } catch (error) {
@@ -121,7 +127,7 @@ function apiKey() { try { return JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8
 function shouldUseApiFootball(key, flag = process.env.USE_API_FOOTBALL) { return Boolean(String(key || '').trim()) && flag !== 'false'; }
 async function readBody(req) { let raw = ''; for await (const chunk of req) { raw += chunk; if (raw.length > 10000) throw new Error('İstek çok büyük'); } return raw ? JSON.parse(raw) : {}; }
 async function getAnalysis(id, refresh) {
-  if (String(id).startsWith('free-')) { const data=readCache();const match=data?.matches?.find(x=>String(x.id)===String(id));if(!match)throw new Error('Maç önbellekte bulunamadı');const [result,enrichment]=await Promise.all([freeAnalysis(match),enrichMatch(match)]);result.injuries=enrichment.injuries;result.lineup=enrichment.lineup;result.currentReferee=enrichment.referee;result.sources=enrichment.sources;result.enrichmentErrors=enrichment.errors;result.recommendation=makeRecommendation({...result,injuriesAvailable:enrichment.sources.some(x=>x.fields.includes('Sakat/cezalı'))});return result; }
+  if (String(id).startsWith('free-')) { const data=readCache();const match=data?.matches?.find(x=>String(x.id)===String(id));if(!match)throw new Error('Maç önbellekte bulunamadı');const analysis=String(id).startsWith('free-tsdb-')?internationalAnalysis(match):freeAnalysis(match);const [result,enrichment]=await Promise.all([analysis,enrichMatch(match)]);result.injuries=enrichment.injuries;result.lineup=enrichment.lineup;result.currentReferee=enrichment.referee;result.sources=enrichment.sources;result.enrichmentErrors=enrichment.errors;result.recommendation=makeRecommendation({...result,injuriesAvailable:enrichment.sources.some(x=>x.fields.includes('Sakat/cezalı'))});return result; }
   if (!apiKey()) { const demo=demoAnalysis(id);demo.predictedResult=predictMatchResult(demo);return demo; }
   const safeId = String(id).replace(/\D/g, '');
   const file = path.join(ANALYSIS_DIR, `${safeId}.json`);
@@ -139,18 +145,34 @@ async function getAnalysis(id, refresh) {
   result.recommendation = makeRecommendation({...result,injuriesAvailable:true});
   fs.mkdirSync(ANALYSIS_DIR, { recursive: true }); fs.writeFileSync(file, JSON.stringify(result, null, 2)); return result;
 }
-async function analyzeCouponMatches(){
-  const data=await getMatches(false),matches=data.matches.filter(x=>new Date(x.date).getTime()>=Date.now()-3*60*60*1000),rows=[];
+async function analyzeCouponMatches(league='all'){
+  const data=await getMatches(false),matches=data.matches.filter(x=>new Date(x.date).getTime()>=Date.now()-3*60*60*1000&&(league==='all'||String(x.leagueId)===String(league))),rows=[];
   for(let i=0;i<matches.length;i+=3){const batch=matches.slice(i,i+3);const results=await Promise.all(batch.map(async match=>{try{return{match,analysis:await getAnalysis(match.id,false)}}catch(error){return{match,error:error.message}}}));rows.push(...results)}
   return rows;
 }
-async function buildCoupon(surprise=false){
-  const rows=await analyzeCouponMatches();
+async function buildCoupon(surprise=false,league='all'){
+  const rows=await analyzeCouponMatches(league),scope=league==='all'?'Bütün ligler':leagues.find(x=>String(x.id)===String(league))?.name||'Seçili lig';
   if(surprise){const candidates=rows.flatMap(({match,analysis})=>{if(!analysis?.scores||Number(analysis.scores.confidence)<65||Number(analysis.h2h?.played||0)<3)return[];const s=analysis.scores,options=[];if(s.homeAdvantage>=45&&s.homeAdvantage<=55)options.push({selection:'Maç sonucu X',confidence:Math.round(59-Math.abs(50-s.homeAdvantage)*.8),reason:`Ev/deplasman dengesi %${s.homeAdvantage}–%${100-s.homeAdvantage}; beraberlik sürprizi değerlendirildi.`});if(s.homeAdvantage>=56&&s.homeAdvantage<=63)options.push({selection:'Maç sonucu 1',confidence:Math.round(s.homeAdvantage-3),reason:`Ev sahibi yönü %${s.homeAdvantage}; daha riskli doğrudan galibiyet seçildi.`});if(s.homeAdvantage>=37&&s.homeAdvantage<=44)options.push({selection:'Maç sonucu 2',confidence:Math.round(97-s.homeAdvantage),reason:`Deplasman yönü %${100-s.homeAdvantage}; daha riskli doğrudan galibiyet seçildi.`});if(s.over25>=54&&s.over25<62)options.push({selection:'2,5 Üst',confidence:s.over25,reason:`Gol eğilimi sınırda: %${s.over25}.`});if(s.btts>=54&&s.btts<62)options.push({selection:'KG Var',confidence:s.btts,reason:`Karşılıklı gol eğilimi sınırda: %${s.btts}.`});const pick=options.sort((a,b)=>b.confidence-a.confidence)[0];return pick?[{matchId:match.id,home:match.home,away:match.away,date:match.date,...pick,lineupConfirmed:Boolean(analysis.lineup?.confirmed),sources:(analysis.sources||[]).map(x=>x.name)}]:[]}).sort((a,b)=>b.confidence-a.confidence).slice(0,3);return{type:'surprise',generatedAt:new Date().toISOString(),analyzed:rows.length,picks:candidates,complete:candidates.length===3,headline:candidates.length?`${candidates.length} sürpriz seçim bulundu`:'Uygun sürpriz seçim bulunamadı',warning:'Sürpriz kupon yüksek risklidir ve oran verisi kullanılmaz. Toplam en fazla 0,25 birim düşün; sonuç veya kazanç garantisi yoktur.'};}
   const candidates=rows.flatMap(({match,analysis})=>{if(!analysis?.recommendation?.primary)return[];const p=analysis.recommendation.primary,dataConfidence=Number(analysis.scores?.confidence||0),h2h=Math.min(Number(analysis.h2h?.played||0),8),lineupBonus=analysis.lineup?.confirmed?4:0,sourceBonus=(analysis.sources?.length||0)>=2?3:0;const confidence=Math.round(p.confidence*.62+dataConfidence*.28+h2h*.5+lineupBonus+sourceBonus);if(p.confidence<62||dataConfidence<65||confidence<67)return[];return[{matchId:match.id,home:match.home,away:match.away,date:match.date,selection:p.market,confidence:Math.min(confidence,89),reason:p.reason,lineupConfirmed:Boolean(analysis.lineup?.confirmed),sources:(analysis.sources||[]).map(x=>x.name)}]}).sort((a,b)=>b.confidence-a.confidence).slice(0,5);
   return{generatedAt:new Date().toISOString(),analyzed:rows.length,picks:candidates,complete:candidates.length===5,headline:candidates.length?`En güçlü ${candidates.length} seçim bulundu`:'Güven eşiğini geçen maç bulunamadı',warning:'Kesin kazanan maç yoktur. Liste yalnızca mevcut verilerde en güçlü istatistiksel seçimleri gösterir; 5 seçimi doldurmak için eşik düşürülmez.'};
 }
-async function getFreeMatches(previousWarnings=[]) { try { const matches=await fetchTffMatches();const payload={source:'tff-sportscore',updatedAt:new Date().toISOString(),matches,warnings:previousWarnings};fs.mkdirSync(path.dirname(CACHE_FILE),{recursive:true});fs.writeFileSync(CACHE_FILE,JSON.stringify(payload,null,2));return payload; } catch(error) { return {source:'demo',updatedAt:new Date().toISOString(),matches:demoMatches,warnings:[...previousWarnings,error.message]}; } }
+async function getFreeMatches(previousWarnings=[]) {
+  const [turkey, international] = await Promise.allSettled([fetchTffMatches(), fetchInternationalMatches(leagues)]);
+  const matches = [
+    ...(turkey.status === 'fulfilled' ? turkey.value : []),
+    ...(international.status === 'fulfilled' ? international.value.matches : [])
+  ].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const warnings = [
+    ...previousWarnings,
+    ...(turkey.status === 'rejected' ? [turkey.reason.message] : []),
+    ...(international.status === 'rejected' ? [international.reason.message] : international.value.warnings)
+  ];
+  if (!matches.length) return {source:'demo',updatedAt:new Date().toISOString(),matches:demoMatches,warnings};
+  const payload={source:'tff-thesportsdb',updatedAt:new Date().toISOString(),matches,warnings};
+  fs.mkdirSync(path.dirname(CACHE_FILE),{recursive:true});
+  fs.writeFileSync(CACHE_FILE,JSON.stringify(payload,null,2));
+  return payload;
+}
 function demoAnalysis(id) {
   const m = demoMatches.find(x => String(x.id) === String(id)) || demoMatches[0];
   return { demo: true, home: { played:5,wins:4,draws:1,losses:0,goalsForAvg:2.2,goalsAgainstAvg:.8,firstHalfAvg:.8,secondHalfAvg:1.4,over25:m.over25,btts:m.btts,form:'WWDWW' }, away: { played:5,wins:2,draws:1,losses:2,goalsForAvg:1.4,goalsAgainstAvg:1.3,firstHalfAvg:.5,secondHalfAvg:.9,over25:m.over25-5,btts:m.btts,form:'WLDWL' }, h2h: { played:8,homeWins:4,draws:2,awayWins:2,goalsAvg:2.75,over25:m.over25 }, injuries: { home:[{name:'Örnek oyuncu',reason:'Kas sakatlığı'}],away:[] }, players: { home:[{name:'Örnek forvet',rating:7.6,minutes:258,goals:3,assists:1}],away:[{name:'Örnek orta saha',rating:7.2,minutes:270,goals:1,assists:2}] }, referee: { home:{referee:m.referee,matches:2,wins:1,draws:1,losses:0},away:{referee:m.referee,matches:1,wins:0,draws:0,losses:1} }, scores: { homeAdvantage:m.homeScore,over25:m.over25,btts:m.btts,firstHalf:57,secondHalf:72,confidence:m.confidence*10 }, generatedAt:new Date().toISOString() };

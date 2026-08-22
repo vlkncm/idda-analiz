@@ -1,0 +1,2 @@
+"""European football prediction engine."""
+

@@ -1,4 +1,232 @@
-# İDDA Analiz Merkezi
+# Ücretsiz Avrupa Futbol Olasılık Motoru
+
+Bu sürüm aylık veri maliyeti **0** olacak şekilde çalışır. Ana kaynak
+[Football-Data.co.uk](https://www.football-data.co.uk/data.php) ücretsiz CSV
+dosyalarıdır. Türkiye `T1`, İngiltere `E0`, Almanya `D1`, İtalya `I1` ve Fransa
+`F1` kodları kaynağın güncel indirme sayfalarından doğrulanmıştır. Opsiyonel
+`football-data.org` v4 sağlayıcısı anahtar yoksa sessizce atlanır. Sportmonks
+yalnızca geriye dönük uyumluluk için opsiyoneldir; normal kurulumda kullanılmaz.
+
+Olasılıklar kesin sonuç, garanti veya bahis tavsiyesi değildir.
+
+## Hızlı başlangıç (Docker)
+
+```powershell
+Copy-Item .env.example .env
+docker compose up --build
+docker compose exec backend python -m app.cli bootstrap
+```
+
+Herhangi bir API anahtarı zorunlu değildir. İsterseniz ücretsiz
+football-data.org hesabınızın anahtarını `.env` içindeki
+`FOOTBALL_DATA_API_KEY` alanına ekleyebilirsiniz.
+
+- Uygulama: http://localhost:3000
+- API: http://localhost:8000/api/v1
+- Swagger: http://localhost:8000/docs
+- Admin: http://localhost:3000/admin
+
+## Yerel SQLite kurulumu
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+python -m alembic upgrade head
+python -m app.cli bootstrap
+uvicorn app.main:app --reload
+```
+
+Varsayılan `DATABASE_URL=sqlite:///./idda_analysis.db` değeridir. Docker Compose
+PostgreSQL kullanır.
+
+## Günlük komutlar
+
+```powershell
+python -m app.cli sync                    # ücretsiz CSV sync
+python -m app.cli sync --history-seasons 8
+python -m app.cli train
+python -m app.cli backtest --league TR-SL
+python -m app.cli predict
+python -m app.cli status
+```
+
+`bootstrap`; beş ligi ve geçmiş sezonları indirir, idempotent olarak DB'ye
+yazar, pre-match Elo geçmişini/feature'ları oluşturur, walk-forward training ve
+backtest yapar, uygun upcoming maçlar varsa tahmin üretir. CSV kaynağı geçici
+olarak erişilemiyorsa yeniden çalıştırılabilir; duplicate oluşturmaz.
+
+Football-Data kolonları eksik olduğunda NULL saklanır. `C` içeren closing odds
+kolonları önceliklidir; oranlar vig temizlendikten sonra modele girer. Odds
+snapshot zamanı kickoff öncesi tutulur ve leakage testi bunu denetler.
+
+Veriler Football-Data.co.uk tarafından maç tahmini/araştırma amacıyla ücretsiz
+sunulur. Kaynağa atıf korunmalı ve yeniden dağıtım/ticari kullanım öncesinde
+güncel kullanım şartları ayrıca kontrol edilmelidir. İstemci yalnız resmi CSV
+download uçlarını, düşük sıklıkta ve seri şekilde çağırır; CAPTCHA veya anti-bot
+mekanizması aşmaz.
+
+## Testler
+
+```powershell
+cd backend
+pytest
+ruff check .
+cd ..\frontend
+npm run typecheck
+npm run lint
+npm run build
+```
+
+## Sorun giderme
+
+- CSV indirme timeout/429: Kaynağa yük bindirmeden birkaç dakika sonra `sync`
+  komutunu yeniden çalıştırın.
+- `insufficient_data`: En az beş sezon indirin; varsayılan sekiz sezondur.
+- Model artifact yok: Sırasıyla `sync`, `train`, `predict` çalıştırın.
+- Ücretsiz API anahtarı yok: Sorun değildir; ana CSV akışı anahtarsızdır.
+
+---
+
+# Önceki Sportmonks tabanlı production notları
+
+Sportmonks Football API v3 verisini PostgreSQL'e senkronize eden; lig bazlı Elo,
+Dixon-Coles ve kalibre edilmiş LightGBM ensemble modeliyle `1/X/2` ve `2.5 ÜST`
+olasılıkları üreten FastAPI + Next.js uygulamasıdır. Olasılıklar kesin sonuç veya
+kazanç garantisi değildir.
+
+## 1. Gereksinimler
+
+- Docker Desktop ve Docker Compose (önerilen), veya Python 3.12+, PostgreSQL ve Node.js 20+
+- Hedef ligleri kapsayan bir Sportmonks Football API aboneliği ve API anahtarı
+
+## 2. Sportmonks API anahtarı
+
+Proje gerçek `.env` dosyası veya API anahtarı içermez. Kök dizinde:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Oluşturduğunuz `.env` dosyasında yalnız şu alanı doldurun:
+
+```dotenv
+SPORTMONKS_API_KEY=gercek_anahtariniz
+```
+
+Anahtar yalnız backend tarafından okunur; loglara ve browser bundle'ına girmez.
+Anahtar yoksa backend çalışır, fakat sync komutu anlaşılır bir hata verir.
+
+Provider güncel resmî v3 endpointlerini kullanır: [leagues](https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/leagues),
+[season schedules](https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/schedules/get-schedules-by-season-id),
+[fixtures](https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/fixtures/get-all-fixtures) ve
+[pre-match odds](https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/standard-odds-feed/pre-match-odds/get-odds-by-fixture-id).
+
+## 3. Docker ile çalıştırma
+
+```powershell
+docker compose up --build
+```
+
+Servisler:
+
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8000
+- Swagger: http://localhost:8000/docs
+- OpenAPI JSON: http://localhost:8000/openapi.json
+
+Backend container'ı açılırken `alembic upgrade head` otomatik çalışır.
+
+## 4. Manuel migration
+
+```powershell
+cd backend
+python -m alembic upgrade head
+```
+
+## 5. Veri senkronizasyonu
+
+```powershell
+docker compose exec backend python -m app.cli sync
+```
+
+Sync hedef ligleri isim ve ülke eşleşmesiyle keşfeder; lig ID'leri hard-code
+değildir. Aynı provider verisi tekrar işlendiğinde duplicate oluşturmaz. Fixture,
+istatistik, xG, lineup, sakatlık ve erişilebilen oranlar güncellenir. 429 cevapları
+Sportmonks `retry_after` değerine göre beklenir.
+
+## 6. Training
+
+```powershell
+docker compose exec backend python -m app.cli train
+```
+
+Training kronolojik feature datasetini veritabanından üretir. Random split
+kullanmaz; geçmiş sezonları training, sonraki sezonları validation/test olarak
+işler. LightGBM, Logistic Regression baseline, calibration ve lig bazlı ensemble
+karşılaştırılır. Yetersiz geçmiş verili ligler açıkça raporlanır.
+
+## 7. Backtest
+
+```powershell
+docker compose exec backend python -m app.cli backtest --league TR-SL
+```
+
+Rapor accuracy yanında Brier, log loss, calibration error, 1/X/2 sınıf
+başarıları, draw precision/recall/F1 ve probability bucket sonuçlarını içerir.
+
+## 8. Upcoming predictions
+
+```powershell
+docker compose exec backend python -m app.cli predict
+docker compose exec backend python -m app.cli status
+```
+
+Production model artifact'i yoksa sistem tahmin uydurmaz. Scheduler varsayılan
+olarak Docker ortamında açıktır: günlük genel sync ve kickoff'tan yaklaşık 90
+dakika önce refresh/prediction çalıştırır. Development ortamında
+`SCHEDULER_ENABLED=false` kullanılabilir.
+
+## 9. Frontend
+
+Ana ekran lig filtreleri ve maç kartlarını; `/matches/{id}` maç detayı Elo, form,
+xG, model agreement ve deterministic açıklamayı; `/admin` model/backtest/feature
+importance görünümünü sunar.
+
+## 10. API
+
+Başlıca uçlar `/api/v1` altındadır:
+
+- `GET /leagues`, `/seasons`, `/matches/upcoming`
+- `GET /matches/{id}`, `/matches/{id}/prediction`, `/predictions`
+- `GET /model/current`, `/model/metrics`
+- `POST /admin/sync`, `/admin/train`, `/admin/backtest`
+
+## 11. Test ve kalite kontrolleri
+
+```powershell
+cd backend
+pytest
+ruff check app tests
+
+cd ..\frontend
+npm run typecheck
+npm run lint
+npm run build
+```
+
+## 12. Sorun giderme
+
+- `SPORTMONKS_API_KEY tanımlı değil`: `.env` içine anahtarı ekleyin ve backend'i yeniden başlatın.
+- Hedef lig bulunamadı: Sportmonks aboneliğinizde lig kapsamını kontrol edin.
+- `insufficient_data`: Daha fazla geçmiş sezon senkronize edin; sistem eksik veriyle production model terfi ettirmez.
+- `409 trained model artifact...`: Önce `sync`, sonra `train` çalıştırın.
+- PostgreSQL bağlantı hatası: `.env` içindeki kullanıcı, parola, veritabanı ve `DATABASE_URL` değerlerini eşleştirin.
+
+---
+
+# Eski IDDA Analiz Merkezi
 
 Windows için veri odaklı futbol maç analiz uygulaması.
 
@@ -10,7 +238,7 @@ GitHub Releases bölümündeki `IDDA-Analiz-Merkezi-Kurulum-1.2.1.exe` dosyasın
 
 - Ayarlar düğmesi görünürdür; kaydedilen API-Football anahtarı yabancı lig sorgularını otomatik etkinleştirir.
 - Premier League, La Liga, Bundesliga, Serie A ve Ligue 1 fikstürleri API-Football üzerinden alınır.
-- Anahtar yoksa uygulama yalnızca ücretsiz TFF/Süper Lig verisini gösterdiğini açıkça belirtir.
+- Anahtar yoksa Süper Lig TFF'den; Premier League, La Liga, Bundesliga, Serie A ve Ligue 1 fikstürleri TheSportsDB'nin ücretsiz API'sinden yüklenir.
 - Bir lig veya veri isteği başarısız olursa hata arayüzde görünür; sessizce boş liste gösterilmez.
 
 ## Tek tuşla kupon
@@ -33,7 +261,7 @@ Herhangi bir paket kurulumu gerekmez. Node.js 20 veya daha yeni bir sürüm yete
 
 ## Veri kaynakları
 
-Güncel Süper Lig fikstürü TFF'nin resmî sayfasından, takım geçmişi ve performans verileri SportScore ücretsiz API'sinden alınır. Bu kullanım için API anahtarı gerekmez. Beş büyük Avrupa ligi için Ayarlar bölümüne API-Football anahtarı girilmelidir. SportScore kullanım şartı gereği arayüzde kaynak bağlantısı gösterilir.
+Güncel Süper Lig fikstürü TFF'nin resmî sayfasından, takım geçmişi ve performans verileri SportScore ücretsiz API'sinden alınır. Beş büyük Avrupa liginin fikstürleri, public-apis kataloğunda yer alan TheSportsDB ücretsiz API'sinden anahtarsız yüklenir. Ayrıntılı yabancı lig istatistikleri için Ayarlar bölümüne isteğe bağlı API-Football anahtarı girilebilir.
 
 Ücretsiz planın günlük kotasını korumak için yanıtlar varsayılan olarak 6 saat önbelleğe alınır. `Verileri yenile` düğmesi önbelleği atlar ve altı API isteği kullanır.
 

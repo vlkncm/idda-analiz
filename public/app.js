@@ -5,6 +5,7 @@ async function init() {
   const config = await fetch('/api/config').then(r => r.json());
   state.leagues = config.leagues;
   renderFilters();
+  renderLeagueCouponButtons();
   await loadMatches();
 }
 
@@ -14,14 +15,14 @@ async function loadMatches(refresh = false) {
   try {
     const data = await fetch(`/api/matches?refresh=${refresh ? 1 : 0}`).then(r => { if (!r.ok) throw new Error('Veriler alınamadı'); return r.json(); });
     state.matches = data.matches; state.source = data.source;
-    $('#sourceStatus').textContent = data.source === 'demo' ? 'Demo veri modu' : data.source === 'tff-sportscore' ? 'TFF + SportScore bağlı' : 'API-Football bağlı';
+    $('#sourceStatus').textContent = data.source === 'demo' ? 'Demo veri modu' : data.source === 'tff-thesportsdb' ? 'TFF + TheSportsDB bağlı' : data.source === 'tff-sportscore' ? 'TFF + SportScore bağlı' : 'API-Football bağlı';
     $('#updatedAt').textContent = `Güncelleme: ${new Date(data.updatedAt).toLocaleString('tr-TR')}`;
     const warnings = Array.isArray(data.warnings) ? data.warnings.filter(Boolean) : [];
-    $('#notice').classList.toggle('show', data.source === 'demo' || data.source === 'tff-sportscore' || warnings.length > 0);
+    $('#notice').classList.toggle('show', data.source === 'demo' || data.source === 'tff-sportscore' || data.source === 'tff-thesportsdb' || warnings.length > 0);
     if (warnings.length) {
       $('#notice').textContent = `Bazı liglerin verisi alınamadı: ${warnings.join(' · ')}`;
-    } else if (data.source === 'tff-sportscore') {
-      $('#notice').innerHTML = 'API anahtarı girilmediği için yalnızca Süper Lig gösteriliyor. Ayarlar’dan API-Football anahtarını kaydedebilirsiniz. <a href="https://sportscore.com/" target="_blank" style="color:inherit">Powered by SportScore</a>';
+    } else if (data.source === 'tff-sportscore' || data.source === 'tff-thesportsdb') {
+      $('#notice').innerHTML = 'Ücretsiz mod etkin: Süper Lig TFF’den, beş büyük Avrupa ligi TheSportsDB’den yükleniyor. API-Football anahtarı ayrıntılı yabancı lig analizlerini etkinleştirir. <a href="https://www.thesportsdb.com/" target="_blank" style="color:inherit">Powered by TheSportsDB</a>';
     } else if (data.source === 'demo') {
       $('#notice').textContent = 'Demo modu açık. Veri kaynaklarına erişim kontrol edilmeli.';
     } else {
@@ -36,6 +37,11 @@ function renderFilters() {
   const all = [{ id: 'all', name: 'Tümü', flag: '◉' }, ...state.leagues];
   $('#leagueFilters').innerHTML = all.map(l => `<button class="filter ${String(l.id) === state.selected ? 'active' : ''}" data-id="${l.id}">${l.flag} ${l.name}</button>`).join('');
   document.querySelectorAll('.filter').forEach(b => b.onclick = () => { state.selected = b.dataset.id; renderFilters(); render(); });
+}
+
+function renderLeagueCouponButtons() {
+  $('#leagueCouponButtons').innerHTML = state.leagues.map(league => `<button class="league-coupon" data-league="${league.id}">${league.flag} ${league.name} kuponu</button>`).join('');
+  document.querySelectorAll('.league-coupon').forEach(button => button.onclick = () => prepareCoupon(button.dataset.league, false, button));
 }
 
 function render() {
@@ -75,6 +81,18 @@ function score(label,v){return `<div class="score-box"><strong>%${v}</strong><sp
 function formTable(name,x){return `<h4>${name} · ${x.form||'—'}</h4><table><tr><td>Maç / G-B-M</td><td>${x.played} / ${x.wins}-${x.draws}-${x.losses}</td></tr><tr><td>Attığı / yediği gol</td><td>${x.goalsForAvg} / ${x.goalsAgainstAvg}</td></tr><tr><td>İY / 2Y gol</td><td>${x.firstHalfAvg} / ${x.secondHalfAvg}</td></tr></table>`}
 function missing(name,rows){return `<h4>${name} (${rows.length})</h4>${rows.length?`<ul>${rows.map(x=>`<li>${x.name}: ${x.reason||x.type||'Belirtilmedi'}</li>`).join('')}</ul>`:'<p class="detail-meta">Kayıtlı eksik yok.</p>'}`}
 function players(name,rows){return `<h4>${name}</h4>${rows.length?`<table>${rows.map(x=>`<tr><td>${x.name}</td><td>${x.rating||'—'} puan · ${x.goals}G ${x.assists}A</td></tr>`).join('')}</table>`:'<p class="detail-meta">Oyuncu verisi bulunamadı.</p>'}`}
+async function prepareCoupon(league='all',surprise=false,button=null){
+  const selectedLeague=league==='all'?null:state.leagues.find(item=>String(item.id)===String(league));
+  const scope=selectedLeague?`${selectedLeague.flag} ${selectedLeague.name}`:'Bütün ligler';
+  if(button)button.disabled=true;
+  $('#couponContent').innerHTML=`<div class="loading">${scope} maçları tek tek analiz ediliyor…</div>`;
+  $('#couponDialog').showModal();
+  try{
+    const params=new URLSearchParams({league:String(league)});if(surprise)params.set('type','surprise');
+    const c=await fetch(`/api/coupon?${params}`).then(r=>{if(!r.ok)throw new Error('Kupon analizi alınamadı');return r.json()});
+    $('#couponContent').innerHTML=`<p class="eyebrow">${surprise?'YÜKSEK RİSKLİ SÜRPRİZ KUPON':'LİG BAZLI İDDA ANALİZİ'}</p><h2>${scope} · ${c.headline}</h2><p class="detail-meta">${c.analyzed} maç incelendi · ${new Date(c.generatedAt).toLocaleString('tr-TR')}</p>${c.picks.length?`<div class="coupon-list ${surprise?'surprise-list':''}">${c.picks.map((p,i)=>`<article><span>${i+1}</span><div><h3>${p.home} – ${p.away}</h3><strong>${p.selection}</strong><p>Güven: %${p.confidence} · ${p.reason}</p><small>${p.lineupConfirmed?'Kesin kadro doğrulandı':'Kesin kadro henüz açıklanmadı'} · ${p.sources.join(', ')||'Temel istatistikler'}</small></div></article>`).join('')}</div>`:'<p class="notice show">Bu kapsamda güven eşiğini geçen seçim bulunamadı.</p>'}<p class="decision-warning">${c.warning}</p>`;
+  }catch(e){$('#couponContent').innerHTML=`<h2>Analiz tamamlanamadı</h2><p>${e.message}</p>`}finally{if(button)button.disabled=false}
+}
 $('#refresh').onclick = () => loadMatches(true);
 $('#couponButton').onclick=async()=>{const button=$('#couponButton');button.disabled=true;$('#couponContent').innerHTML='<div class="loading">Bütün maçlar tek tek analiz ediliyor…</div>';$('#couponDialog').showModal();try{const c=await fetch('/api/coupon').then(r=>{if(!r.ok)throw new Error('Kupon analizi alınamadı');return r.json()});$('#couponContent').innerHTML=`<p class="eyebrow">OTOMATİK KUPON ANALİZİ</p><h2>${c.headline}</h2><p class="detail-meta">${c.analyzed} maç incelendi · ${new Date(c.generatedAt).toLocaleString('tr-TR')}</p>${c.picks.length?`<div class="coupon-list">${c.picks.map((p,i)=>`<article><span>${i+1}</span><div><h3>${p.home} – ${p.away}</h3><strong>${p.selection}</strong><p>Güven: %${p.confidence} · ${p.reason}</p><small>${p.lineupConfirmed?'Kesin kadro doğrulandı':'Kesin kadro henüz açıklanmadı'} · ${p.sources.join(', ')||'Temel istatistikler'}</small></div></article>`).join('')}</div>`:'<p class="notice show">Bugün güven eşiğini geçen seçim yok. Kupon yapmamak en doğru sonuçtur.</p>'}<p class="decision-warning">${c.warning}</p>`}catch(e){$('#couponContent').innerHTML=`<h2>Analiz tamamlanamadı</h2><p>${e.message}</p>`}finally{button.disabled=false}};
 $('#surpriseButton').onclick=async()=>{const button=$('#surpriseButton');button.disabled=true;$('#couponContent').innerHTML='<div class="loading">Sürpriz olabilecek maçlar aranıyor…</div>';$('#couponDialog').showModal();try{const c=await fetch('/api/coupon?type=surprise').then(r=>{if(!r.ok)throw new Error('Sürpriz kupon analizi alınamadı');return r.json()});$('#couponContent').innerHTML=`<p class="eyebrow surprise-text">YÜKSEK RİSKLİ SÜRPRİZ KUPON</p><h2>${c.headline}</h2><p class="detail-meta">${c.analyzed} maç incelendi · oran kullanılmıyor</p>${c.picks.length?`<div class="coupon-list surprise-list">${c.picks.map((p,i)=>`<article><span>${i+1}</span><div><h3>${p.home} – ${p.away}</h3><strong>${p.selection}</strong><p>İstatistik puanı: %${p.confidence} · ${p.reason}</p><small>${p.lineupConfirmed?'Kesin kadro doğrulandı':'Kesin kadro henüz açıklanmadı'}</small></div></article>`).join('')}</div>`:'<p class="notice show">Bugün sürpriz kupon için uygun maç bulunamadı.</p>'}<p class="decision-warning">${c.warning}</p>`}catch(e){$('#couponContent').innerHTML=`<h2>Analiz tamamlanamadı</h2><p>${e.message}</p>`}finally{button.disabled=false}};

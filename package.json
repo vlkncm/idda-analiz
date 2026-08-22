@@ -1,6 +1,6 @@
 {
   "name": "idda-analiz",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Süper Lig ve büyük Avrupa ligleri için veri odaklı maç analiz uygulaması",
   "author": "vlkncm",
   "private": true,
@@ -19,7 +19,7 @@
     "appId": "tr.idda.analiz",
     "productName": "IDDA Analiz Merkezi",
     "asar": true,
-    "files": ["server.js", "analyzer.js", "free-provider.js", "enrichment-provider.js", "electron.js", "public/**/*", "package.json"],
+    "files": ["server.js", "analyzer.js", "free-provider.js", "international-provider.js", "international-analysis-provider.js", "enrichment-provider.js", "electron.js", "public/**/*", "package.json"],
     "directories": { "output": "dist" },
     "win": { "target": ["nsis", "portable"] },
     "nsis": {

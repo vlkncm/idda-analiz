@@ -7,3 +7,13 @@ test-data*/
 live-check/
 *.exe
 *.blockmap
+backend/.venv/
+backend/.test-venv/
+backend/.pytest_cache/
+backend/**/__pycache__/
+frontend/.next/
+frontend/.env.local
+frontend/*.tsbuildinfo
+backend/artifacts/*.joblib
+backend/*.sqlite
+backend/*.db
