@@ -2,7 +2,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { URL } = require('node:url');
-const { buildAnalysis, summarizePlayers, makeRecommendation, predictMatchResult } = require('./analyzer');
+const { makeRecommendation, predictMatchResult } = require('./analyzer');
 const { fetchTffMatches, freeAnalysis } = require('./free-provider');
 const { fetchInternationalMatches } = require('./international-provider');
 const { internationalAnalysis } = require('./international-analysis-provider');
@@ -14,8 +14,6 @@ const ROOT = __dirname;
 const PUBLIC = path.join(ROOT, 'public');
 const DATA_ROOT = process.env.IDDA_DATA_DIR || path.join(ROOT, 'data');
 const CACHE_FILE = path.join(DATA_ROOT, 'cache.json');
-const SETTINGS_FILE = path.join(DATA_ROOT, 'settings.json');
-const ANALYSIS_DIR = path.join(DATA_ROOT, 'analysis');
 const PORT = Number(process.env.PORT || 4173);
 const CACHE_MINUTES = Number(process.env.CACHE_MINUTES || 360);
 
@@ -45,13 +43,7 @@ function demo(leagueId, home, away, date, homeScore, over25, btts, reasons) {
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
-    if (url.pathname === '/api/config' && req.method === 'GET') return json(res, 200, { leagues, apiConfigured: Boolean(apiKey()), cacheMinutes: CACHE_MINUTES });
-    if (url.pathname === '/api/settings' && req.method === 'POST') {
-      const body = await readBody(req); const key = String(body.apiKey || '').trim();
-      fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
-      fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ apiKey: key }, null, 2));
-      return json(res, 200, { ok: true, apiConfigured: Boolean(key) });
-    }
+    if (url.pathname === '/api/config' && req.method === 'GET') return json(res, 200, { leagues, cacheMinutes: CACHE_MINUTES });
     if (url.pathname === '/api/matches') {
       const league = url.searchParams.get('league') || 'all';
       const refresh = url.searchParams.get('refresh') === '1';
@@ -77,39 +69,10 @@ const server = http.createServer(async (req, res) => {
 });
 
 async function getMatches(forceRefresh) {
-  if (!shouldUseApiFootball(apiKey())) return getFreeMatches();
   const cached = readCache();
-  if (!forceRefresh && cached?.matches?.length && Date.now() - new Date(cached.updatedAt).getTime() < CACHE_MINUTES * 60000) return cached;
-
-  const from = isoDate(new Date());
-  const end = new Date(); end.setDate(end.getDate() + 7);
-  const to = isoDate(end);
-  const season = seasonFor(new Date());
-  const settled = await Promise.allSettled(leagues.map(l => api(`/fixtures?league=${l.id}&season=${season}&from=${from}&to=${to}&timezone=Europe%2FIstanbul`)));
-  const matches = settled.flatMap((result, index) => result.status === 'fulfilled' ? result.value.response.map(f => normalizeFixture(f, leagues[index])) : []);
-  if (!matches.length) return getFreeMatches(settled.filter(x => x.status === 'rejected').map(x => x.reason.message));
-  const payload = { source: 'api-football', updatedAt: new Date().toISOString(), matches, warnings: settled.filter(x => x.status === 'rejected').map(x => x.reason.message) };
-  fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
-  fs.writeFileSync(CACHE_FILE, JSON.stringify(payload, null, 2));
-  return payload;
-}
-
-async function api(endpoint) {
-  const response = await fetch(`https://v3.football.api-sports.io${endpoint}`, { headers: { 'x-apisports-key': apiKey() } });
-  if (!response.ok) throw new Error(`API-Football ${response.status}`);
-  const body = await response.json();
-  if (body.errors && Object.keys(body.errors).length) throw new Error(`API-Football: ${JSON.stringify(body.errors)}`);
-  return body;
-}
-
-function normalizeFixture(f, league) {
-  return {
-    id: f.fixture.id, leagueId: league.id, home: f.teams.home.name, away: f.teams.away.name, homeId: f.teams.home.id, awayId: f.teams.away.id,
-    homeLogo: f.teams.home.logo, awayLogo: f.teams.away.logo, date: f.fixture.date,
-    status: f.fixture.status.short, venue: f.fixture.venue?.name || 'Belirtilmedi', referee: f.fixture.referee || 'Henüz atanmadı',
-    homeScore: null, over25: null, btts: null, confidence: null,
-    reasons: ['Ayrıntılı analiz motoru sonraki veri güncellemesinde hesaplanacak.'], demo: false
-  };
+  const freeSources = new Set(['tff-thesportsdb', 'tff-sportscore', 'demo']);
+  if (!forceRefresh && cached?.matches?.length && freeSources.has(cached.source) && Date.now() - new Date(cached.updatedAt).getTime() < CACHE_MINUTES * 60000) return cached;
+  return getFreeMatches();
 }
 
 function serveStatic(requestPath, res) {
@@ -123,27 +86,9 @@ function serveStatic(requestPath, res) {
 }
 
 function readCache() { try { return JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8')); } catch { return null; } }
-function apiKey() { try { return JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8')).apiKey || process.env.API_FOOTBALL_KEY || ''; } catch { return process.env.API_FOOTBALL_KEY || ''; } }
-function shouldUseApiFootball(key, flag = process.env.USE_API_FOOTBALL) { return Boolean(String(key || '').trim()) && flag !== 'false'; }
-async function readBody(req) { let raw = ''; for await (const chunk of req) { raw += chunk; if (raw.length > 10000) throw new Error('İstek çok büyük'); } return raw ? JSON.parse(raw) : {}; }
-async function getAnalysis(id, refresh) {
+async function getAnalysis(id) {
   if (String(id).startsWith('free-')) { const data=readCache();const match=data?.matches?.find(x=>String(x.id)===String(id));if(!match)throw new Error('Maç önbellekte bulunamadı');const analysis=String(id).startsWith('free-tsdb-')?internationalAnalysis(match):freeAnalysis(match);const [result,enrichment]=await Promise.all([analysis,enrichMatch(match)]);result.injuries=enrichment.injuries;result.lineup=enrichment.lineup;result.currentReferee=enrichment.referee;result.sources=enrichment.sources;result.enrichmentErrors=enrichment.errors;result.recommendation=makeRecommendation({...result,injuriesAvailable:enrichment.sources.some(x=>x.fields.includes('Sakat/cezalı'))});return result; }
-  if (!apiKey()) { const demo=demoAnalysis(id);demo.predictedResult=predictMatchResult(demo);return demo; }
-  const safeId = String(id).replace(/\D/g, '');
-  const file = path.join(ANALYSIS_DIR, `${safeId}.json`);
-  if (!refresh && fs.existsSync(file)) { const cached = JSON.parse(fs.readFileSync(file, 'utf8')); if (Date.now() - new Date(cached.generatedAt).getTime() < CACHE_MINUTES * 60000) { cached.predictedResult ||= predictMatchResult(cached); return cached; } }
-  const fixture = (await api(`/fixtures?id=${safeId}`)).response[0];
-  if (!fixture) throw new Error('Maç bulunamadı');
-  const hid = fixture.teams.home.id, aid = fixture.teams.away.id;
-  const [injuries, h2h, homeFixtures, awayFixtures] = await Promise.all([
-    api(`/injuries?fixture=${safeId}`), api(`/fixtures/headtohead?h2h=${hid}-${aid}&last=10`),
-    api(`/fixtures?team=${hid}&last=10&status=FT`), api(`/fixtures?team=${aid}&last=10&status=FT`)
-  ]);
-  const recent = [...homeFixtures.response.slice(0, 3), ...awayFixtures.response.slice(0, 3)];
-  const playerResponses = await Promise.all(recent.map(f => api(`/fixtures/players?fixture=${f.fixture.id}`)));
-  const result = buildAnalysis({ fixture, homeFixtures: homeFixtures.response, awayFixtures: awayFixtures.response, h2h: h2h.response, injuries: injuries.response, homePlayers: summarizePlayers(playerResponses, hid), awayPlayers: summarizePlayers(playerResponses, aid) });
-  result.recommendation = makeRecommendation({...result,injuriesAvailable:true});
-  fs.mkdirSync(ANALYSIS_DIR, { recursive: true }); fs.writeFileSync(file, JSON.stringify(result, null, 2)); return result;
+  const demo=demoAnalysis(id);demo.predictedResult=predictMatchResult(demo);return demo;
 }
 async function analyzeCouponMatches(league='all'){
   const data=await getMatches(false),matches=data.matches.filter(x=>new Date(x.date).getTime()>=Date.now()-3*60*60*1000&&(league==='all'||String(x.leagueId)===String(league))),rows=[];
@@ -177,8 +122,6 @@ function demoAnalysis(id) {
   const m = demoMatches.find(x => String(x.id) === String(id)) || demoMatches[0];
   return { demo: true, home: { played:5,wins:4,draws:1,losses:0,goalsForAvg:2.2,goalsAgainstAvg:.8,firstHalfAvg:.8,secondHalfAvg:1.4,over25:m.over25,btts:m.btts,form:'WWDWW' }, away: { played:5,wins:2,draws:1,losses:2,goalsForAvg:1.4,goalsAgainstAvg:1.3,firstHalfAvg:.5,secondHalfAvg:.9,over25:m.over25-5,btts:m.btts,form:'WLDWL' }, h2h: { played:8,homeWins:4,draws:2,awayWins:2,goalsAvg:2.75,over25:m.over25 }, injuries: { home:[{name:'Örnek oyuncu',reason:'Kas sakatlığı'}],away:[] }, players: { home:[{name:'Örnek forvet',rating:7.6,minutes:258,goals:3,assists:1}],away:[{name:'Örnek orta saha',rating:7.2,minutes:270,goals:1,assists:2}] }, referee: { home:{referee:m.referee,matches:2,wins:1,draws:1,losses:0},away:{referee:m.referee,matches:1,wins:0,draws:0,losses:1} }, scores: { homeAdvantage:m.homeScore,over25:m.over25,btts:m.btts,firstHalf:57,secondHalf:72,confidence:m.confidence*10 }, generatedAt:new Date().toISOString() };
 }
-function isoDate(date) { return date.toISOString().slice(0, 10); }
-function seasonFor(date) { return date.getMonth() < 6 ? date.getFullYear() - 1 : date.getFullYear(); }
 function json(res, status, body) { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(body)); }
 function textResponse(res, status, body) { res.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end(body); }
 function loadEnv() { const file = path.join(__dirname, '.env'); if (!fs.existsSync(file)) return; for (const line of fs.readFileSync(file, 'utf8').split(/\r?\n/)) { const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/); if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^['"]|['"]$/g, ''); } }
@@ -188,4 +131,4 @@ if (require.main === module) {
 }
 
 function startServer(port = PORT) { return new Promise((resolve, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', () => resolve(server.address().port)); }); }
-module.exports = { seasonFor, leagues, shouldUseApiFootball, startServer, server };
+module.exports = { leagues, startServer, server };

@@ -15,14 +15,14 @@ async function loadMatches(refresh = false) {
   try {
     const data = await fetch(`/api/matches?refresh=${refresh ? 1 : 0}`).then(r => { if (!r.ok) throw new Error('Veriler alınamadı'); return r.json(); });
     state.matches = data.matches; state.source = data.source;
-    $('#sourceStatus').textContent = data.source === 'demo' ? 'Demo veri modu' : data.source === 'tff-thesportsdb' ? 'TFF + TheSportsDB bağlı' : data.source === 'tff-sportscore' ? 'TFF + SportScore bağlı' : 'API-Football bağlı';
+    $('#sourceStatus').textContent = data.source === 'demo' ? 'Demo veri modu' : data.source === 'tff-thesportsdb' ? 'TFF + TheSportsDB bağlı' : 'TFF + SportScore bağlı';
     $('#updatedAt').textContent = `Güncelleme: ${new Date(data.updatedAt).toLocaleString('tr-TR')}`;
     const warnings = Array.isArray(data.warnings) ? data.warnings.filter(Boolean) : [];
     $('#notice').classList.toggle('show', data.source === 'demo' || data.source === 'tff-sportscore' || data.source === 'tff-thesportsdb' || warnings.length > 0);
     if (warnings.length) {
       $('#notice').textContent = `Bazı liglerin verisi alınamadı: ${warnings.join(' · ')}`;
     } else if (data.source === 'tff-sportscore' || data.source === 'tff-thesportsdb') {
-      $('#notice').innerHTML = 'Ücretsiz mod etkin: Süper Lig TFF’den, beş büyük Avrupa ligi TheSportsDB’den yükleniyor. API-Football anahtarı ayrıntılı yabancı lig analizlerini etkinleştirir. <a href="https://www.thesportsdb.com/" target="_blank" style="color:inherit">Powered by TheSportsDB</a>';
+      $('#notice').innerHTML = 'Süper Lig TFF’den, beş büyük Avrupa ligi TheSportsDB’den yükleniyor. <a href="https://www.thesportsdb.com/" target="_blank" style="color:inherit">Powered by TheSportsDB</a>';
     } else if (data.source === 'demo') {
       $('#notice').textContent = 'Demo modu açık. Veri kaynaklarına erişim kontrol edilmeli.';
     } else {
@@ -98,7 +98,4 @@ $('#couponButton').onclick=async()=>{const button=$('#couponButton');button.disa
 $('#surpriseButton').onclick=async()=>{const button=$('#surpriseButton');button.disabled=true;$('#couponContent').innerHTML='<div class="loading">Sürpriz olabilecek maçlar aranıyor…</div>';$('#couponDialog').showModal();try{const c=await fetch('/api/coupon?type=surprise').then(r=>{if(!r.ok)throw new Error('Sürpriz kupon analizi alınamadı');return r.json()});$('#couponContent').innerHTML=`<p class="eyebrow surprise-text">YÜKSEK RİSKLİ SÜRPRİZ KUPON</p><h2>${c.headline}</h2><p class="detail-meta">${c.analyzed} maç incelendi · oran kullanılmıyor</p>${c.picks.length?`<div class="coupon-list surprise-list">${c.picks.map((p,i)=>`<article><span>${i+1}</span><div><h3>${p.home} – ${p.away}</h3><strong>${p.selection}</strong><p>İstatistik puanı: %${p.confidence} · ${p.reason}</p><small>${p.lineupConfirmed?'Kesin kadro doğrulandı':'Kesin kadro henüz açıklanmadı'}</small></div></article>`).join('')}</div>`:'<p class="notice show">Bugün sürpriz kupon için uygun maç bulunamadı.</p>'}<p class="decision-warning">${c.warning}</p>`}catch(e){$('#couponContent').innerHTML=`<h2>Analiz tamamlanamadı</h2><p>${e.message}</p>`}finally{button.disabled=false}};
 $('.coupon-close').onclick=()=>$('#couponDialog').close();
 $('.close').onclick = () => $('#detailDialog').close();
-$('#settingsButton').onclick=()=>$('#settingsDialog').showModal();
-$('.settings-close').onclick=()=>$('#settingsDialog').close();
-$('#saveSettings').onclick=async()=>{const key=$('#apiKey').value.trim();$('#settingsMessage').textContent='Kaydediliyor…';const r=await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key})});if(r.ok){$('#settingsMessage').textContent='Kaydedildi. Gerçek veriler yükleniyor…';await loadMatches(true);setTimeout(()=>$('#settingsDialog').close(),700)}else $('#settingsMessage').textContent='Kaydedilemedi.'};
 init();

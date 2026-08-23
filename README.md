@@ -236,8 +236,7 @@ GitHub Releases bölümündeki `IDDA-Analiz-Merkezi-Kurulum-1.2.1.exe` dosyasın
 
 ## v1.2.1 yabancı lig veri bağlantısı
 
-- Ayarlar düğmesi görünürdür; kaydedilen API-Football anahtarı yabancı lig sorgularını otomatik etkinleştirir.
-- Premier League, La Liga, Bundesliga, Serie A ve Ligue 1 fikstürleri API-Football üzerinden alınır.
+- Premier League, La Liga, Bundesliga, Serie A ve Ligue 1 fikstürleri TheSportsDB üzerinden alınır.
 - Anahtar yoksa Süper Lig TFF'den; Premier League, La Liga, Bundesliga, Serie A ve Ligue 1 fikstürleri TheSportsDB'nin ücretsiz API'sinden yüklenir.
 - Bir lig veya veri isteği başarısız olursa hata arayüzde görünür; sessizce boş liste gösterilmez.
 
@@ -249,7 +248,7 @@ Muhtemel maç sonucu standart olarak `1 = ev sahibi galibiyeti`, `0 = beraberlik
 
 `Sürpriz kupon` düğmesi ana kupona girmeyen dengeli maçlar, beraberlikler ve sınırdaki gol göstergelerinden en fazla üç yüksek riskli seçim üretir. Oran verisi kullanılmadığı için yüksek oran iddiası taşımaz.
 
-Süper Lig haftalık karşılaşmalarını TFF ve SportScore verileriyle, beş büyük Avrupa ligini API-Football verileriyle inceleyen yerel uygulama.
+Süper Lig haftalık karşılaşmalarını TFF ve SportScore verileriyle, beş büyük Avrupa ligini TheSportsDB verileriyle inceleyen yerel uygulama.
 
 ## Çalıştırma
 
@@ -261,7 +260,7 @@ Herhangi bir paket kurulumu gerekmez. Node.js 20 veya daha yeni bir sürüm yete
 
 ## Veri kaynakları
 
-Güncel Süper Lig fikstürü TFF'nin resmî sayfasından, takım geçmişi ve performans verileri SportScore ücretsiz API'sinden alınır. Beş büyük Avrupa liginin fikstürleri, public-apis kataloğunda yer alan TheSportsDB ücretsiz API'sinden anahtarsız yüklenir. Ayrıntılı yabancı lig istatistikleri için Ayarlar bölümüne isteğe bağlı API-Football anahtarı girilebilir.
+Güncel Süper Lig fikstürü TFF'nin resmî sayfasından, takım geçmişi ve performans verileri SportScore ücretsiz API'sinden alınır. Beş büyük Avrupa liginin fikstürleri TheSportsDB ücretsiz API'sinden anahtarsız yüklenir.
 
 Ücretsiz planın günlük kotasını korumak için yanıtlar varsayılan olarak 6 saat önbelleğe alınır. `Verileri yenile` düğmesi önbelleği atlar ve altı API isteği kullanır.
 
@@ -269,7 +268,7 @@ Güncel Süper Lig fikstürü TFF'nin resmî sayfasından, takım geçmişi ve p
 
 - Altı lig için haftalık fikstür
 - Demo veri modu
-- API-Football bağlantısı
+- TheSportsDB bağlantısı
 - Dosya tabanlı önbellek
 - Lig filtreleri ve maç ayrıntısı
 - Sakat ve cezalı oyuncu listesi
