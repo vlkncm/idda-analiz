@@ -15,12 +15,14 @@ async function loadMatches(refresh = false) {
   try {
     const data = await fetch(`/api/matches?refresh=${refresh ? 1 : 0}`).then(r => { if (!r.ok) throw new Error('Veriler alınamadı'); return r.json(); });
     state.matches = data.matches; state.source = data.source;
-    $('#sourceStatus').textContent = data.source === 'demo' ? 'Demo veri modu' : data.source === 'tff-thesportsdb' ? 'TFF + TheSportsDB bağlı' : 'TFF + SportScore bağlı';
+    $('#sourceStatus').textContent = data.source === 'espn-with-fallbacks' ? 'Güncel fikstürler bağlı' : data.source === 'demo' ? 'Demo veri modu' : data.source === 'tff-thesportsdb' ? 'TFF + TheSportsDB bağlı' : 'Ücretsiz veri kaynakları bağlı';
     $('#updatedAt').textContent = `Güncelleme: ${new Date(data.updatedAt).toLocaleString('tr-TR')}`;
     const warnings = Array.isArray(data.warnings) ? data.warnings.filter(Boolean) : [];
     $('#notice').classList.toggle('show', data.source === 'demo' || data.source === 'tff-sportscore' || data.source === 'tff-thesportsdb' || warnings.length > 0);
     if (warnings.length) {
       $('#notice').textContent = `Bazı liglerin verisi alınamadı: ${warnings.join(' · ')}`;
+    } else if (data.source === 'espn-with-fallbacks') {
+      $('#notice').textContent = 'Güncel fikstürler ücretsiz kaynaklardan otomatik yükleniyor.';
     } else if (data.source === 'tff-sportscore' || data.source === 'tff-thesportsdb') {
       $('#notice').innerHTML = 'Süper Lig TFF’den, beş büyük Avrupa ligi TheSportsDB’den yükleniyor. <a href="https://www.thesportsdb.com/" target="_blank" style="color:inherit">Powered by TheSportsDB</a>';
     } else if (data.source === 'demo') {

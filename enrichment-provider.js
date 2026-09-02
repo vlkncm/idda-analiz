@@ -37,8 +37,8 @@ async function enrichMatch(match) {
   const sources=[],errors=[];let tff={referee:'',lineup:{home:[],away:[],homeBench:[],awayBench:[],confirmed:false}},injuries={home:[],away:[]};
   const matchId=String(match.id||'').match(/(\d+)$/)?.[1];
   const tasks=[];
-  if(matchId)tasks.push(getLegacy(`https://www.tff.org/Default.aspx?pageId=29&macId=${matchId}`).then(html=>{tff=parseTff(html);sources.push({name:'TFF',fields:['Hakem','Kesin kadro','Yedekler'],url:`https://www.tff.org/Default.aspx?pageId=29&macId=${matchId}`});}).catch(e=>errors.push(`TFF: ${e.message}`)));
-  tasks.push(getModern(TRANSFERMARKT_ABSENCES).then(html=>{injuries=parseAbsences(html,match.home,match.away);sources.push({name:'Transfermarkt',fields:['Sakat/cezalı'],url:TRANSFERMARKT_ABSENCES});}).catch(e=>errors.push(`Transfermarkt: ${e.message}`)));
+  if(Number(match.leagueId)===203&&String(match.id||'').startsWith('free-tff-')&&matchId)tasks.push(getLegacy(`https://www.tff.org/Default.aspx?pageId=29&macId=${matchId}`).then(html=>{tff=parseTff(html);sources.push({name:'TFF',fields:['Hakem','Kesin kadro','Yedekler'],url:`https://www.tff.org/Default.aspx?pageId=29&macId=${matchId}`});}).catch(e=>errors.push(`TFF: ${e.message}`)));
+  if(Number(match.leagueId)===203)tasks.push(getModern(TRANSFERMARKT_ABSENCES).then(html=>{injuries=parseAbsences(html,match.home,match.away);sources.push({name:'Transfermarkt',fields:['Sakat/cezalı'],url:TRANSFERMARKT_ABSENCES});}).catch(e=>errors.push(`Transfermarkt: ${e.message}`)));
   await Promise.all(tasks);
   return{...tff,injuries,sources,errors,updatedAt:new Date().toISOString()};
 }

@@ -13,3 +13,14 @@ test('yabancı lig geçmişinden takım formu hesaplanır', () => {
   assert.equal(stats.draws,1);
   assert.equal(stats.btts,100);
 });
+
+test('farklı kaynaklardaki takım adları aynı takımla eşleşir', () => {
+  const rows=[
+    {home:'FC Koln',away:'Bayern Munchen',home_score:1,away_score:2,home_ht:0,away_ht:1},
+    {home:'Nottm Forest',away:'Wolves',home_score:1,away_score:1,home_ht:1,away_ht:0}
+  ];
+  assert.equal(teamStats(rows,'FC Cologne','home').played,1);
+  assert.equal(teamStats(rows,'Bayern Munich','away').played,1);
+  assert.equal(teamStats(rows,'Nottingham Forest','home').played,1);
+  assert.equal(teamStats(rows,'Wolverhampton Wanderers','away').played,1);
+});

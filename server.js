@@ -87,7 +87,7 @@ function serveStatic(requestPath, res) {
 
 function readCache() { try { return JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8')); } catch { return null; } }
 async function getAnalysis(id) {
-  if (String(id).startsWith('free-')) { const data=readCache();const match=data?.matches?.find(x=>String(x.id)===String(id));if(!match)throw new Error('Maç önbellekte bulunamadı');const analysis=String(id).startsWith('free-tsdb-')?internationalAnalysis(match):freeAnalysis(match);const [result,enrichment]=await Promise.all([analysis,enrichMatch(match)]);result.injuries=enrichment.injuries;result.lineup=enrichment.lineup;result.currentReferee=enrichment.referee;result.sources=enrichment.sources;result.enrichmentErrors=enrichment.errors;result.recommendation=makeRecommendation({...result,injuriesAvailable:enrichment.sources.some(x=>x.fields.includes('Sakat/cezalı'))});return result; }
+  if (String(id).startsWith('free-')) { const data=readCache();const match=data?.matches?.find(x=>String(x.id)===String(id));if(!match)throw new Error('Maç önbellekte bulunamadı');const analysis=Number(match.leagueId)===203?freeAnalysis(match):internationalAnalysis(match);const [result,enrichment]=await Promise.all([analysis,enrichMatch(match)]);result.injuries=enrichment.injuries;result.lineup=enrichment.lineup;result.currentReferee=enrichment.referee;result.sources=enrichment.sources;result.enrichmentErrors=enrichment.errors;result.recommendation=makeRecommendation({...result,injuriesAvailable:enrichment.sources.some(x=>x.fields.includes('Sakat/cezalı'))});return result; }
   const demo=demoAnalysis(id);demo.predictedResult=predictMatchResult(demo);return demo;
 }
 async function analyzeCouponMatches(league='all'){
@@ -103,9 +103,11 @@ async function buildCoupon(surprise=false,league='all'){
 }
 async function getFreeMatches(previousWarnings=[]) {
   const [turkey, international] = await Promise.allSettled([fetchTffMatches(), fetchInternationalMatches(leagues)]);
+  const internationalMatches = international.status === 'fulfilled' ? international.value.matches : [];
+  const hasTurkey = internationalMatches.some(match => Number(match.leagueId) === 203);
   const matches = [
-    ...(turkey.status === 'fulfilled' ? turkey.value : []),
-    ...(international.status === 'fulfilled' ? international.value.matches : [])
+    ...(!hasTurkey && turkey.status === 'fulfilled' ? turkey.value : []),
+    ...internationalMatches
   ].sort((a, b) => new Date(a.date) - new Date(b.date));
   const warnings = [
     ...previousWarnings,
@@ -113,7 +115,7 @@ async function getFreeMatches(previousWarnings=[]) {
     ...(international.status === 'rejected' ? [international.reason.message] : international.value.warnings)
   ];
   if (!matches.length) return {source:'demo',updatedAt:new Date().toISOString(),matches:demoMatches,warnings};
-  const payload={source:'tff-thesportsdb',updatedAt:new Date().toISOString(),matches,warnings};
+  const payload={source:internationalMatches.some(match=>match.source==='ESPN')?'espn-with-fallbacks':'tff-thesportsdb',updatedAt:new Date().toISOString(),matches,warnings};
   fs.mkdirSync(path.dirname(CACHE_FILE),{recursive:true});
   fs.writeFileSync(CACHE_FILE,JSON.stringify(payload,null,2));
   return payload;
