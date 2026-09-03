@@ -2,6 +2,8 @@ const https = require('node:https');
 const { predictMatchResult } = require('./analyzer');
 const { fetchFootballDataHistory } = require('./international-provider');
 const TFF_URL = 'https://www.tff.org/Default.aspx?pageId=198';
+let historyCache = null;
+let historyPending = null;
 
 function getTff() {
   return new Promise((resolve, reject) => {
@@ -32,11 +34,12 @@ async function fetchTffMatches() {
 }
 async function sportTeam(teamSlug) { const response = await fetch(`https://sportscore.com/api/widget/team/?sport=football&slug=${encodeURIComponent(teamSlug)}&limit=30&src=idda-analiz`); if (!response.ok) return []; return (await response.json()).matches || []; }
 function stats(rows, name) { const done = rows.filter(x => x.status === 'finished' && x.home_score != null); let w=0,d=0,l=0,gf=0,ga=0,over=0,btts=0; for (const x of done) { const isHome=x.home.toLowerCase().includes(name.toLowerCase().split(' ')[0]), a=Number(isHome?x.home_score:x.away_score), b=Number(isHome?x.away_score:x.home_score); gf+=a;ga+=b;a>b?w++:a<b?l++:d++;if(a+b>2)over++;if(a&&b)btts++; } const n=done.length||1; return { played:done.length,wins:w,draws:d,losses:l,goalsForAvg:+(gf/n).toFixed(2),goalsAgainstAvg:+(ga/n).toFixed(2),firstHalfAvg:0,secondHalfAvg:0,over25:Math.round(over/n*100),btts:Math.round(btts/n*100),form:'' }; }
-async function history(date = new Date()) { const start=date.getMonth()<6?date.getFullYear()-1:date.getFullYear(),urls=[start,start-1,start-2,start-3].map(year=>`https://raw.githubusercontent.com/openfootball/europe/master/turkey/${year}-${String(year+1).slice(-2)}_tr1.txt`);const [openFootball,footballData]=await Promise.all([Promise.allSettled(urls.map(async u=>{const r=await fetch(u);if(!r.ok)throw new Error(`OpenFootball ${r.status}`);return r.text()})).then(results=>results.flatMap(result=>result.status==='fulfilled'?parseHistory(result.value):[])),fetchFootballDataHistory(203,date).catch(()=>[])]);return [...new Map([...footballData,...openFootball].map(row=>[`${row.home}|${row.away}|${row.home_score}|${row.away_score}`,row])).values()]; }
+async function history(date = new Date()) { if(historyCache&&Date.now()-historyCache.time<6*60*60*1000)return historyCache.rows;if(historyPending)return historyPending;historyPending=(async()=>{const footballData=await fetchFootballDataHistory(203,date).catch(()=>[]);if(footballData.length>=100)return footballData;const start=date.getMonth()<6?date.getFullYear()-1:date.getFullYear(),urls=[start,start-1,start-2,start-3].map(year=>`https://raw.githubusercontent.com/openfootball/europe/master/turkey/${year}-${String(year+1).slice(-2)}_tr1.txt`),openFootball=await Promise.allSettled(urls.map(async u=>{const r=await fetch(u);if(!r.ok)throw new Error(`OpenFootball ${r.status}`);return r.text()})).then(results=>results.flatMap(result=>result.status==='fulfilled'?parseHistory(result.value):[]));return [...new Map([...footballData,...openFootball].map(row=>[`${row.home}|${row.away}|${row.home_score}|${row.away_score}`,row])).values()]})();try{const rows=await historyPending;historyCache={time:Date.now(),rows};return rows}finally{historyPending=null} }
 function parseHistory(text) { return [...text.matchAll(/^\s*(?:\d{1,2}:\d{2}\s+)?(.+?)\s{2,}v\s+(.+?)\s{2,}(\d+)-(\d+)(?:\s+\((\d+)-(\d+)\))?\s*$/gm)].map(m=>({home:m[1].trim(),away:m[2].trim(),home_score:m[3],away_score:m[4],home_ht:m[5],away_ht:m[6],status:'finished'})); }
 const teamAliases = new Map([
   ['erzurum-bb', 'erzurumspor'],
-  ['bb-erzurumspor', 'erzurumspor']
+  ['bb-erzurumspor', 'erzurumspor'],
+  ['buyuksehyr', 'basaksehir']
 ]);
 function key(name) { const normalized=slug(name).replace(/-(fk|sk|jk)$/, '').replace(/^istanbul-/, '').replace(/^(arca|corendon|tumosan)-/, '');return teamAliases.get(normalized)||normalized; }
 function hasTeam(row,name) { const k=key(name),h=key(row.home),a=key(row.away); return h.includes(k)||k.includes(h)||a.includes(k)||k.includes(a); }

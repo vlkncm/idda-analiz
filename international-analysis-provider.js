@@ -4,13 +4,16 @@ const aliases=new Map(Object.entries({
   fccologne:'fckoln',
   koln:'fckoln',
   borussiamonchengladbach:'borussiamgladbach',
+  mgladbach:'borussiamgladbach',
   bayernmunich:'bayernmunchen',
   interMilan:'internazionale',
   intermilano:'internazionale',
   nottinghamforest:'nottmforest',
   wolverhamptonwanderers:'wolves',
   athleticclub:'athleticbilbao',
+  athbilbao:'athleticbilbao',
   atleticodeMadrid:'atleticomadrid',
+  athmadrid:'atleticomadrid',
   parissaintgermain:'parissg'
 }).map(([name,value])=>[name.toLowerCase(),value]));
 function key(name=''){const normalized=name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');return aliases.get(normalized)||normalized}

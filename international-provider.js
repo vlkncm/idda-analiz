@@ -170,6 +170,13 @@ function parseFootballDataCsv(text) {
   });
 }
 
+function historyTimestamp(row) {
+  const match=String(row.date||'').match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if(!match)return 0;
+  const year=Number(match[3])<100?2000+Number(match[3]):Number(match[3]);
+  return Date.UTC(year,Number(match[2])-1,Number(match[1]));
+}
+
 async function fetchFootballDataHistory(leagueId, date = new Date()) {
   const division = footballDataDivisions.get(Number(leagueId));
   if (!division) return [];
@@ -181,7 +188,7 @@ async function fetchFootballDataHistory(leagueId, date = new Date()) {
     if (!response.ok) throw new Error(`Football-Data ${division} ${year}: ${response.status}`);
     return parseFootballDataCsv(await response.text());
   }));
-  return settled.flatMap(result => result.status === 'fulfilled' ? result.value : []);
+  return settled.flatMap(result => result.status === 'fulfilled' ? result.value : []).sort((a,b)=>historyTimestamp(a)-historyTimestamp(b));
 }
 
 async function fetchInternationalMatches(leagues, date = new Date()) {
@@ -227,4 +234,4 @@ async function fetchLeagueHistory(leagueId, date = new Date()) {
   return rows;
 }
 
-module.exports = { fetchInternationalMatches, fetchLeagueHistory, fetchFootballDataHistory, normalizeEvent, normalizeEspnEvent, seasonLabel, footballDataSeasonCode, parseCsvLine, parseFootballDataCsv };
+module.exports = { fetchInternationalMatches, fetchLeagueHistory, fetchFootballDataHistory, normalizeEvent, normalizeEspnEvent, seasonLabel, footballDataSeasonCode, parseCsvLine, parseFootballDataCsv, historyTimestamp };
