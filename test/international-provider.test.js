@@ -1,6 +1,8 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { parseCsvLine } = require('../fixture-providers/football-data-uk');
+const { EspnFixtureProvider } = require('../fixture-providers/espn');
 const { FOOTBALL_DATA_UK_LEAGUES, seasonLabel, seasonStart, footballDataSeasonCode, footballDataHistoryUrl, csvHistoryRows, parseOpenFootball, fetchLeagueHistory, clearHistoryCache } = require('../international-provider');
 
 test('Avrupa futbol sezonu etiketi temmuz geçişiyle doğru oluşturulur', () => {
@@ -36,4 +38,33 @@ test('geçmiş sonuçlar hesaplamadan önce kronolojik sıralanır', async () =>
   const request=async url=>{const div=url.endsWith('/E0.csv')?'E0':'X';return{ok:true,status:200,text:async()=>div==='E0'?'Div,Date,HomeTeam,AwayTeam,FTHG,FTAG\nE0,30/08/2026,A,B,1,0\nE0,01/08/2026,C,D,0,0':'Div,Date,HomeTeam,AwayTeam,FTHG,FTAG'};};
   const rows=await fetchLeagueHistory(39,new Date('2026-09-01T12:00:00Z'),{request});
   assert.equal(rows[0].playedAt,'2026-08-01T12:00:00.000Z');assert.equal(rows.at(-1).playedAt,'2026-08-30T12:00:00.000Z');
+});
+
+test('Football-Data sezon kodu doğru oluşturulur', () => {
+  assert.equal(footballDataSeasonCode(2026), '2627');
+  assert.equal(footballDataSeasonCode(1999), '9900');
+});
+
+test('tırnak ve virgül içeren CSV satırı doğru ayrıştırılır', () => {
+  assert.deepEqual(parseCsvLine('E0,"Team, City",Other,2'), ['E0', 'Team, City', 'Other', '2']);
+});
+
+test('Football-Data geçmiş maçları ortak analiz biçimine dönüştürülür', () => {
+  const csv = 'Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HTHG,HTAG\nE0,22/08/2026,Arsenal,Chelsea,2,1,1,0\nE0,29/08/2026,Liverpool,Everton,,,,\n';
+  const rows = csvHistoryRows(csv, 39);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].home, 'Arsenal'); assert.equal(rows[0].away, 'Chelsea');
+  assert.equal(rows[0].home_score, 2); assert.equal(rows[0].away_score, 1);
+  assert.equal(rows[0].playedAt, '2026-08-22T12:00:00.000Z');
+});
+
+test('ESPN karşılaşması uygulama biçimine dönüştürülür', async () => {
+  const event={id:'401',date:'2026-09-04T19:00Z',status:{type:{state:'pre'}},competitions:[{competitors:[{homeAway:'home',team:{displayName:'Ipswich Town',logo:'home.png'}},{homeAway:'away',team:{displayName:'Liverpool',logo:'away.png'}}],venue:{fullName:'Portman Road'}}]};
+  const provider = new EspnFixtureProvider({ now: () => new Date('2026-09-01'), request: async () => ({ events: [event] }) });
+  const [match] = await provider.fetchFixtures({league:{id:39,name:'Premier League',espnSlug:'eng.1'},from:'2026-09-01',to:'2026-09-10'});
+  assert.equal(match.id,'espn:401');
+  assert.equal(match.leagueId,39);
+  assert.equal(match.home,'Ipswich Town');
+  assert.equal(match.away,'Liverpool');
+  assert.equal(match.source,'ESPN');
 });

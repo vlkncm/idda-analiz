@@ -1,7 +1,7 @@
 'use strict';
 
 const { parseCsv } = require('./fixture-providers/football-data-uk');
-const { canonicalTeamName } = require('./fixture-providers/model');
+const { canonicalTeamName, LEAGUES } = require('./fixture-providers/model');
 
 const SPORTS_DB_BASE_URL = 'https://www.thesportsdb.com/api/v1/json/123';
 const FOOTBALL_DATA_UK_BASE_URL = 'https://www.football-data.co.uk/mmz4281';
@@ -103,6 +103,20 @@ async function turkeyOpenFootballHistory(starts, request) {
   const settled = await Promise.allSettled(starts.map(async start => parseOpenFootball(await getText(`https://raw.githubusercontent.com/openfootball/europe/master/turkey/${start}-${String(start + 1).slice(-2)}_tr1.txt`, request))));
   return settled.flatMap(result => result.status === 'fulfilled' ? result.value : []);
 }
+async function espnCurrentHistory(leagueId, start, request) {
+  const league = LEAGUES.find(item => item.id === leagueId);
+  const end = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const response = await requestWithTimeout(`https://site.api.espn.com/apis/site/v2/sports/soccer/${league.espnSlug}/scoreboard?dates=${start}0701-${end}&limit=1000`, request);
+  const payload = await response.json();
+  return (payload.events || []).flatMap(event => {
+    if (!event.status?.type?.completed) return [];
+    const competitors = event.competitions?.[0]?.competitors || [];
+    const home = competitors.find(item => item.homeAway === 'home'), away = competitors.find(item => item.homeAway === 'away');
+    const homeScore = home?.score, awayScore = away?.score;
+    if (!home?.team?.displayName || !away?.team?.displayName || homeScore == null || awayScore == null || homeScore === '' || awayScore === '' || !Number.isFinite(Number(homeScore)) || !Number.isFinite(Number(awayScore))) return [];
+    return [{ leagueId, home: home.team.displayName, away: away.team.displayName, home_score: Number(homeScore), away_score: Number(awayScore), home_ht: null, away_ht: null, playedAt: event.date, status: 'finished', source: 'ESPN' }];
+  });
+}
 function beforeMatch(rows, matchDate) {
   const limit = new Date(matchDate).getTime();
   if (!Number.isFinite(limit)) return rows;
@@ -125,6 +139,10 @@ async function fetchAndCacheHistory(numericLeagueId, date, start, cacheKey, requ
   let rows = await footballDataHistory(numericLeagueId, starts, request, warnings);
   if (numericLeagueId === 203) rows.push(...await turkeyOpenFootballHistory(starts, request));
   else if (rows.length < 20) rows.push(...await sportsDbHistory(numericLeagueId, starts, request));
+  if (start === seasonStart(new Date()) && !rows.some(row => row.playedAt && seasonStart(row.playedAt) === start)) {
+    try { rows.push(...await espnCurrentHistory(numericLeagueId, start, request)); }
+    catch (error) { warnings.push(`ESPN güncel sezon geçmişi alınamadı: ${error.message}`); }
+  }
   const unique = [...new Map(rows.map(row => [`${row.leagueId}|${row.playedAt}|${canonicalTeamName(row.home)}|${canonicalTeamName(row.away)}`, row])).values()]
     .sort((left, right) => new Date(left.playedAt || 0) - new Date(right.playedAt || 0));
   historyWarnings.set(cacheKey, warnings);

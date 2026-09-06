@@ -1,5 +1,16 @@
 # Ücretsiz Avrupa Futbol Olasılık Motoru
 
+## Windows 1.4.2 — güncel sürüm
+
+Proje kökünde `npm ci`, `npm test`, ardından `npm run build` çalıştırın.
+Kurulum: `dist/IDDA-Analiz-Merkezi-Kurulum-1.4.2.exe`.
+Taşınabilir: `dist/IDDA-Analiz-Merkezi-Tasinabilir-1.4.2.exe`.
+Eski kurulu uygulama GitHub değişikliğiyle otomatik güncellenmez; yeni paketi kurun.
+Kaynak kodu doğrudan çalıştırmak için `npm run desktop` kullanın.
+`npm run validate:live` altı ligde gerçek kaynaklarla bütün yaklaşan maçları inceler
+ve `validation/live-results.json` raporunu oluşturur. Güncel sonuçlar ve eksik
+verili maçlar için [doğrulama raporuna](MODEL_VALIDATION_REPORT.md) bakın.
+
 ## Production analiz mimarisi
 
 Windows/Electron uygulamasının tek production analiz motoru kökteki
@@ -10,7 +21,7 @@ offline model karşılaştırma aracıdır. `analyzer.js` yalnız `legacy` karş
 uyumluluğu için tutulur ve production önerisi üretmez.
 
 Motor; tarih-noktalı veri filtresi, 180 günlük yarı ömür, iç/dış saha güçleri,
-0–5 normalize Dixon–Coles matrisi, kronolojik Elo ve train/validation/test
+0–20 Dixon–Coles hesabı (ekranda 0–5 matrisi ve dışarıda kalan pay), kronolojik Elo ve train/validation/test
 ayrımı kullanır. Validation döneminde ensemble ağırlıkları ile sıcaklık
 kalibrasyonu seçilir. Yeni motor dokunulmamış test döneminde lig frekansı
 baseline'ını log loss ve Brier ölçütlerinde geçmezse standart Poisson/Elo
