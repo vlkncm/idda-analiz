@@ -77,6 +77,23 @@ class OddsSnapshot(Base, TimestampMixin):
     selection: Mapped[str] = mapped_column(String(160), nullable=False)
     odds: Mapped[float] = mapped_column(Float, nullable=False)
     captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    provider: Mapped[str | None] = mapped_column(String(80))
+    provider_event_id: Mapped[str | None] = mapped_column(String(160))
+    bookmaker_key: Mapped[str | None] = mapped_column(String(120))
+    point: Mapped[float | None] = mapped_column(Float)
+
+
+class BettingSplit(Base, TimestampMixin):
+    __tablename__ = "betting_splits"
+    __table_args__ = (UniqueConstraint("match_id", "provider", "market", "selection", "captured_at", name="betting_split_identity"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    match_id: Mapped[int] = mapped_column(ForeignKey("matches.id"), nullable=False)
+    provider: Mapped[str] = mapped_column(String(80), nullable=False)
+    market: Mapped[str] = mapped_column(String(160), nullable=False)
+    selection: Mapped[str] = mapped_column(String(160), nullable=False)
+    ticket_percentage: Mapped[float | None] = mapped_column(Float)
+    money_percentage: Mapped[float | None] = mapped_column(Float)
+    captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
 class FeatureSnapshot(Base, TimestampMixin):

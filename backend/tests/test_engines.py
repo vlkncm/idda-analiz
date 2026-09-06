@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from math import isnan
 
 import numpy as np
 import pandas as pd
@@ -72,6 +73,22 @@ def test_point_in_time_features_ignore_future_matches() -> None:
     assert features["market_data_missing"] == 0
     assert features["home_last5_points_per_game"] == features["home_form_5_ppm"]
     assert "h2h_matches" not in features
+
+
+def test_missing_xg_is_nan_not_a_fake_zero() -> None:
+    kickoff = datetime(2026, 8, 22, tzinfo=timezone.utc)
+    history = [HistoricalMatch(kickoff - timedelta(days=7), "A", "B", 2, 0)]
+    features = FeatureBuilder().build("A", "B", kickoff, history)
+    assert isnan(features["home_form_5_xg"])
+    assert features["home_form_5_xg_missing"] == 1
+
+
+def test_optional_h2h_is_limited_to_two_years_and_missing_is_not_zero() -> None:
+    kickoff = datetime(2026, 8, 22, tzinfo=timezone.utc)
+    history = [HistoricalMatch(kickoff - timedelta(days=800), "A", "B", 2, 0)]
+    features = FeatureBuilder(enable_h2h=True).build("A", "B", kickoff, history)
+    assert features["h2h_matches"] == 0
+    assert isnan(features["h2h_home_points"])
 
 
 def test_squad_module_is_optional_and_importance_weighted() -> None:

@@ -13,3 +13,8 @@ test('yabancı lig geçmişinden takım formu hesaplanır', () => {
   assert.equal(stats.draws,1);
   assert.equal(stats.btts,100);
 });
+test('son 10 hesabı girdi sırasından bağımsız olarak en yeni maçları kullanır', () => {
+  const rows=Array.from({length:12},(_,index)=>({home:'Arsenal',away:`Team ${index}`,home_score:index<2?0:2,away_score:index<2?1:0,playedAt:new Date(Date.UTC(2026,0,index+1)).toISOString()})).reverse();
+  const stats=teamStats(rows,'Arsenal','home');
+  assert.equal(stats.played,10);assert.equal(stats.wins,10);assert.equal(stats.form,'WWWWWWWWWW');
+});

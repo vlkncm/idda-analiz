@@ -1,6 +1,6 @@
 {
   "name": "idda-analiz",
-  "version": "1.2.3",
+  "version": "1.4.1",
   "description": "Süper Lig ve büyük Avrupa ligleri için veri odaklı maç analiz uygulaması",
   "author": "vlkncm",
   "private": true,
@@ -9,7 +9,8 @@
     "start": "node server.js",
     "desktop": "electron .",
     "test": "node --test",
-    "build": "electron-builder --win nsis portable"
+    "build": "electron-builder --win nsis portable",
+    "validate:live": "node scripts/live-validation.js"
   },
   "devDependencies": {
     "electron": "43.4.0",
@@ -19,9 +20,29 @@
     "appId": "tr.idda.analiz",
     "productName": "IDDA Analiz Merkezi",
     "asar": true,
-    "files": ["server.js", "analyzer.js", "free-provider.js", "international-provider.js", "international-analysis-provider.js", "enrichment-provider.js", "electron.js", "public/**/*", "package.json"],
-    "directories": { "output": "dist" },
-    "win": { "target": ["nsis", "portable"] },
+    "files": [
+      "server.js",
+      "fixture-service.js",
+      "fixture-providers/**/*",
+      "analyzer.js",
+      "probability-engine.js",
+      "free-provider.js",
+      "international-provider.js",
+      "international-analysis-provider.js",
+      "enrichment-provider.js",
+      "electron.js",
+      "public/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
@@ -30,7 +51,14 @@
       "shortcutName": "IDDA Analiz Merkezi",
       "artifactName": "IDDA-Analiz-Merkezi-Kurulum-${version}.${ext}"
     },
-    "portable": { "artifactName": "IDDA-Analiz-Merkezi-Tasinabilir-${version}.${ext}" }
+    "portable": {
+      "artifactName": "IDDA-Analiz-Merkezi-Tasinabilir-${version}.${ext}"
+    }
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.2"
+  }
 }

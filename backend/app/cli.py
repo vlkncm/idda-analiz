@@ -110,6 +110,9 @@ def run_backtest(args) -> None:
         if league is None:
             raise SystemExit(f"unknown league: {args.league}")
         frame = TrainingDatasetBuilder(db, settings.feature_half_life_days).build(league)
+        if frame.empty or "kickoff_at" not in frame.columns:
+            print(json.dumps({"league": args.league, "status": "insufficient_data", "matches": 0, "reports": []}, ensure_ascii=False, indent=2))
+            return
         reports = WalkForwardTrainer(settings.feature_half_life_days, args.minimum_train_seasons).run(frame)
         print(json.dumps([asdict(report) for report in reports], ensure_ascii=False, indent=2, default=str))
 

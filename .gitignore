@@ -1,5 +1,7 @@
 .env
 data/cache.json
+data/fixtures-cache.json
+data/fixture-sources.json
 node_modules/
 dist/
 release*/

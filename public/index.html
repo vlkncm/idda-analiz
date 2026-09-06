@@ -1,37 +1,19 @@
 <!doctype html>
 <html lang="tr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>İDDA Analiz Merkezi</title>
-  <link rel="stylesheet" href="/styles.css">
-</head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>İDDA Analiz Merkezi</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/analysis.css"></head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#"><span class="brandmark">İA</span><span>İDDA <b>ANALİZ</b><small>VERİ ODAKLI MAÇ MERKEZİ</small></span></a>
-    <div class="status"><i></i><span id="sourceStatus">Veriler yükleniyor</span></div>
-  </header>
-  <main>
-    <section class="hero">
-      <div><p class="eyebrow">HAFTALIK KARŞILAŞMALAR</p><h1>Veriyi oku.<br><em>Riski yönet.</em></h1><p>Altı büyük ligden form, gol eğilimi, saha avantajı ve kadro etkilerini tek ekranda karşılaştır.</p></div>
-      <div class="hero-stat"><strong id="matchCount">—</strong><span>MAÇ</span><small>Önümüzdeki 7 gün</small></div>
-    </section>
-    <section class="toolbar">
-      <div id="leagueFilters" class="filters"></div>
-      <div class="toolbar-actions"><button id="couponButton" class="coupon-button">★ Bütün liglerden kupon</button><button id="surpriseButton" class="surprise-button">⚡ Sürpriz kupon</button><button id="refresh" class="refresh">↻ Verileri yenile</button></div>
-    </section>
-    <section class="league-coupons"><span>Lig kuponları:</span><div id="leagueCouponButtons"></div></section>
-    <div class="notice" id="notice"></div>
-    <section class="summary">
-      <article><span>En güçlü ev sahibi</span><strong id="bestHome">—</strong></article>
-      <article><span>En yüksek gol eğilimi</span><strong id="bestGoals">—</strong></article>
-      <article><span>Ortalama güven</span><strong id="avgConfidence">—</strong></article>
-    </section>
-    <section><div class="section-title"><h2>Maç analizleri</h2><span id="updatedAt"></span></div><div id="matches" class="match-grid"></div></section>
-    <p class="disclaimer">Bu uygulama istatistiksel değerlendirme sunar; sonuç veya kazanç garantisi vermez. Bahis finansal risk içerir.</p>
-  </main>
-  <dialog id="detailDialog"><button class="close" aria-label="Kapat">×</button><div id="dialogContent"></div></dialog>
-  <dialog id="couponDialog"><button class="coupon-close close" aria-label="Kapat">×</button><div id="couponContent"></div></dialog>
-  <script src="/app.js"></script>
+<header class="topbar"><a class="brand" href="#"><span class="brandmark">İA</span><span>İDDA <b>ANALİZ</b><small>VERİ ODAKLI MAÇ MERKEZİ</small></span></a><div class="status"><i id="statusDot"></i><span id="sourceStatus">Maçlar güncelleniyor…</span></div></header>
+<main>
+<section class="hero"><div><p class="eyebrow">GÜNCEL KARŞILAŞMALAR</p><h1>Veriyi oku.<br><em>Riski yönet.</em></h1><p>Altı büyük ligdeki gerçek fikstürü Türkiye saatiyle incele ve geçmiş sonuçlara dayalı analizleri karşılaştır.</p></div><div class="hero-stat"><strong id="matchCount">—</strong><span>MAÇ</span><small id="rangeCaption">Önümüzdeki 14 gün</small></div></section>
+<section class="toolbar"><div id="leagueFilters" class="filters"></div><div class="toolbar-actions"><button id="couponButton" class="coupon-button">★ Tek Tuşla Kupon</button><button id="surpriseButton" class="surprise-button">⚡ Sürpriz Kupon</button><button id="refresh" class="refresh">↻ Maçları Güncelle</button></div></section>
+<section class="range-toolbar"><span>Tarih:</span><div id="dateFilters" class="filters"></div></section>
+<div class="notice" id="notice" role="status"></div>
+<section class="summary"><article><span>Seçili aralık</span><strong id="selectedRange">Önümüzdeki 14 gün</strong></article><article><span>Lig kapsamı</span><strong id="leagueSummary">Tüm ligler</strong></article><article><span>Veri durumu</span><strong id="dataState">Güncelleniyor</strong></article></section>
+<section><div class="section-title"><h2>Maç programı</h2><span id="updatedAt"></span></div><div id="matches" class="match-grid"><div class="loading">Maçlar güncelleniyor…</div></div></section>
+<p class="disclaimer">Fikstür ile tahmin verisi ayrıdır. Analizler geçmiş sonuçlara dayanır; sonuç veya kazanç garantisi vermez.</p>
+</main>
+<dialog id="detailDialog"><button class="close detail-close" aria-label="Kapat">×</button><div id="dialogContent"></div></dialog>
+<dialog id="couponDialog"><button class="close coupon-close" aria-label="Kapat">×</button><div id="couponContent"></div></dialog>
+<script src="/app.js"></script>
 </body>
 </html>

@@ -143,6 +143,7 @@ class SportmonksProvider:
 TARGET_LEAGUES = {
     ("Süper Lig", "Turkey"): "TR-SL",
     ("Premier League", "England"): "EN-PL",
+    ("La Liga", "Spain"): "ES-LL",
     ("Bundesliga", "Germany"): "DE-BL",
     ("Serie A", "Italy"): "IT-SA",
     ("Ligue 1", "France"): "FR-L1",

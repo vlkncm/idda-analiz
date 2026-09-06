@@ -1,0 +1,1676 @@
+{
+  "generatedAt": "2026-09-06T20:05:27.360Z",
+  "runtime": {
+    "ok": true,
+    "version": "1.4.1",
+    "engine": "node-dixon-coles-elo-v1",
+    "codeRoot": "C:\\Users\\yeliz\\Projects\\idda-analiz"
+  },
+  "totalFixtures": 129,
+  "leagueCounts": {
+    "Süper Lig": 20,
+    "Premier League": 20,
+    "La Liga": 31,
+    "Bundesliga": 18,
+    "Serie A": 22,
+    "Ligue 1": 18
+  },
+  "historyCounts": {
+    "Süper Lig": 816,
+    "Premier League": 1140,
+    "La Liga": 1140,
+    "Bundesliga": 918,
+    "Serie A": 1140,
+    "Ligue 1": 918
+  },
+  "historySourceWarnings": {
+    "Süper Lig": [
+      "2026-2027 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2025-2026 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2023-2024 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2024-2025 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 geçmiş verisi alınamadı: fetch failed",
+      "2025-2026 geçmiş verisi alınamadı: fetch failed",
+      "2024-2025 geçmiş verisi alınamadı: fetch failed",
+      "2023-2024 geçmiş verisi alınamadı: fetch failed"
+    ],
+    "Premier League": [
+      "2023-2024 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2025-2026 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2024-2025 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 geçmiş verisi alınamadı: Geçmiş veri HTTP 404"
+    ],
+    "La Liga": [
+      "2025-2026 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2023-2024 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2024-2025 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 geçmiş verisi alınamadı: Geçmiş veri HTTP 404"
+    ],
+    "Bundesliga": [
+      "2026-2027 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2025-2026 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2024-2025 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2023-2024 Football-Data.co.uk: Geçmiş veri kaynağı zaman aşımına uğradı; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 geçmiş verisi alınamadı: Geçmiş veri HTTP 404"
+    ],
+    "Serie A": [
+      "2023-2024 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2025-2026 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2024-2025 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 geçmiş verisi alınamadı: Geçmiş veri HTTP 404"
+    ],
+    "Ligue 1": [
+      "2024-2025 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2023-2024 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2025-2026 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 Football-Data.co.uk: fetch failed; arşiv/yedek kaynak deneniyor.",
+      "2026-2027 geçmiş verisi alınamadı: Geçmiş veri HTTP 404"
+    ]
+  },
+  "analyzed": 129,
+  "decisions": {
+    "GÜÇLÜ SEÇENEK": 91,
+    "VERİ YETERSİZ": 34,
+    "TEMKİNLİ SEÇENEK": 4
+  },
+  "selections": {
+    "İkinci yarı 0,5 Üst": 69,
+    "2,5 Alt": 5,
+    "1X": 13,
+    "X2": 8
+  },
+  "failures": [
+    {
+      "match": "Beşiktaş - Erzurumspor",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Erzurumspor deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Union Berlin - Schalke 04",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Schalke 04 deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Santander - Alavés",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Santander iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Dortmund - Paderborn",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Paderborn deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Mainz - Frankfurt",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Frankfurt deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Samsunspor - Çorum FK",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Çorum FK deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Chelsea - Hull",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Hull deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Celta - Málaga",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Málaga deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Coventry City - Brighton",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Coventry City iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Lille - Troyes",
+      "league": "Ligue 1",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Troyes deplasman geçmişi 0/3"
+    },
+    {
+      "match": "RB Leipzig - Hamburg SV",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Hamburg SV deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Le Mans - Lens",
+      "league": "Ligue 1",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Le Mans iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Manchester United - Manchester City",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Manchester United iç saha geçmişi 0/3"
+    },
+    {
+      "match": "SV Elversberg - Bayern Munich",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "SV Elversberg iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Getafe - Deportivo",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Deportivo deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Amed SFK - Başakşehir",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Amed SFK iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Deportivo - Sevilla",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Deportivo iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Barcelona - Santander",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Santander deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Málaga - Villarreal",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Málaga iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Frankfurt - Freiburg",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Frankfurt iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Hamburg SV - Koln",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Hamburg SV iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Çorum FK - Alanyaspor",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Çorum FK iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Newcastle United - Hull",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Hull deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Nottingham Forest - Coventry City",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Coventry City deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Celta - Santander",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Santander deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Angers - Troyes",
+      "league": "Ligue 1",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Troyes deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Le Mans - Lorient",
+      "league": "Ligue 1",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Le Mans iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Getafe - Málaga",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Málaga deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Erzurumspor - Samsunspor",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Erzurumspor iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Fulham - Manchester United",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Manchester United deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Schalke 04 - SV Elversberg",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Schalke 04 iç saha geçmişi 0/3; SV Elversberg deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Deportivo - Real Betis",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Deportivo iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Amed SFK - Beşiktaş",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Amed SFK iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Paderborn - Hoffenheim",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Paderborn iç saha geçmişi 0/3"
+    }
+  ],
+  "results": [
+    {
+      "match": "Cagliari - Lecce",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Caykur Rizespor - Alanyaspor",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.9,
+      "dataConfidence": 68,
+      "reason": null
+    },
+    {
+      "match": "Goztepe - Gaziantep FK",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.9,
+      "dataConfidence": 68,
+      "reason": null
+    },
+    {
+      "match": "Getafe - Celta",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.2,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Udinese - Lazio",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "2,5 Alt",
+      "probability": 89,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Elche - Real Sociedad",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.2,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Beşiktaş - Erzurumspor",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Erzurumspor deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Union Berlin - Schalke 04",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Schalke 04 deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Venezia - Fiorentina",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Rennes - Marseille",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Sevilla - Valencia",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.2,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Santander - Alavés",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Santander iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Genoa - Frosinone",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 78.5,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Dortmund - Paderborn",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Paderborn deplasman geçmişi 0/3"
+    },
+    {
+      "match": "FC Augsburg - Leverkusen",
+      "league": "Bundesliga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 86.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Mainz - Frankfurt",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Frankfurt deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Freiburg - Borussia Monchengladbach",
+      "league": "Bundesliga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 86.1,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Hoffenheim - Stuttgart",
+      "league": "Bundesliga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 86.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Eyupspor - Caykur Rizespor",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.8,
+      "dataConfidence": 68,
+      "reason": null
+    },
+    {
+      "match": "Samsunspor - Çorum FK",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Çorum FK deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Bournemouth - Brentford",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Aston Villa - Nottingham Forest",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Chelsea - Hull",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Hull deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Crystal Palace - Ipswich Town",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Liverpool - Fulham",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Osasuna - Espanyol",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.2,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Strasbourg - Monaco",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Lazio - AC Milan",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı.; Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Tottenham - Everton",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Athletic Bilbao - Elche",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.2,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Koln - Werder Bremen",
+      "league": "Bundesliga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 86.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Alanyaspor - Goztepe",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "2,5 Alt",
+      "probability": 82.5,
+      "dataConfidence": 68,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Konyaspor - Trabzonspor",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.8,
+      "dataConfidence": 68,
+      "reason": null
+    },
+    {
+      "match": "Atalanta - Cagliari",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 87.1,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Auxerre - Nice",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Le Havre - Angers",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Lorient - Toulouse",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Paris FC - Lyon",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Sunderland - Arsenal",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Real Madrid - Rayo Vallecano",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 88.4,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Celta - Málaga",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Málaga deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Coventry City - Brighton",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Coventry City iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Lecce - Monza",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 80.6,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Lille - Troyes",
+      "league": "Ligue 1",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Troyes deplasman geçmişi 0/3"
+    },
+    {
+      "match": "RB Leipzig - Hamburg SV",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Hamburg SV deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Genclerbirligi - Kasimpasa",
+      "league": "Süper Lig",
+      "decision": "TEMKİNLİ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.8,
+      "dataConfidence": 61,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Levante - Barcelona",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "X2",
+      "probability": 85.6,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Le Mans - Lens",
+      "league": "Ligue 1",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Le Mans iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Manchester United - Manchester City",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Manchester United iç saha geçmişi 0/3"
+    },
+    {
+      "match": "SV Elversberg - Bayern Munich",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "SV Elversberg iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Napoli - Bologna",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Getafe - Deportivo",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Deportivo deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Amed SFK - Başakşehir",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Amed SFK iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Galatasaray - Kocaelispor",
+      "league": "Süper Lig",
+      "decision": "TEMKİNLİ SEÇENEK",
+      "selection": "1X",
+      "probability": 96.8,
+      "dataConfidence": 63,
+      "reason": null
+    },
+    {
+      "match": "Sassuolo - Juventus",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Brest - PSG",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "X2",
+      "probability": 83.3,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Real Sociedad - Atletico Madrid",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Como - Parma",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 89.5,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Torino - AS Roma",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Gaziantep FK - Fenerbahçe",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "X2",
+      "probability": 88.8,
+      "dataConfidence": 68,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Inter - Udinese",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 78.1,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Leeds - Newcastle United",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Villarreal - Real Betis",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Rayo Vallecano - Espanyol",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Alavés - Valencia",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Elche - Real Madrid",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "X2",
+      "probability": 82.3,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Atletico Madrid - Osasuna",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 85.6,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Deportivo - Sevilla",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Deportivo iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Barcelona - Santander",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Santander deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Levante - Athletic Bilbao",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Real Betis - Getafe",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Málaga - Villarreal",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Málaga iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Kasimpasa - Konyaspor",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.8,
+      "dataConfidence": 68,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Bayern Munich - Union Berlin",
+      "league": "Bundesliga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 97,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Monza - Sassuolo",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "X2",
+      "probability": 80,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Monaco - Lens",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Brentford - Chelsea",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Espanyol - Elche",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Tottenham - Aston Villa",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Osasuna - Rayo Vallecano",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Bologna - Torino",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Udinese - Cagliari",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 79.1,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Borussia Monchengladbach - Mainz",
+      "league": "Bundesliga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 86.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Frankfurt - Freiburg",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Frankfurt iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Hamburg SV - Koln",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Hamburg SV iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Werder Bremen - FC Augsburg",
+      "league": "Bundesliga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 86.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Çorum FK - Alanyaspor",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Çorum FK iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Kocaelispor - Gaziantep FK",
+      "league": "Süper Lig",
+      "decision": "TEMKİNLİ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.8,
+      "dataConfidence": 61,
+      "reason": null
+    },
+    {
+      "match": "Brighton - Arsenal",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Everton - Ipswich Town",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Newcastle United - Hull",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Hull deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Athletic Bilbao - Alavés",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Paris FC - Strasbourg",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "AS Roma - Inter",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı.; Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Nottingham Forest - Coventry City",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Coventry City deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Celta - Santander",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Santander deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Stuttgart - Dortmund",
+      "league": "Bundesliga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 86.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Başakşehir - Genclerbirligi",
+      "league": "Süper Lig",
+      "decision": "TEMKİNLİ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.8,
+      "dataConfidence": 63,
+      "reason": null
+    },
+    {
+      "match": "Trabzonspor - Galatasaray",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "X2",
+      "probability": 85.5,
+      "dataConfidence": 68,
+      "reason": null
+    },
+    {
+      "match": "Venezia - Lazio",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "2,5 Alt",
+      "probability": 86,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Angers - Troyes",
+      "league": "Ligue 1",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Troyes deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Le Mans - Lorient",
+      "league": "Ligue 1",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Le Mans iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Lyon - Rennes",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Toulouse - Le Havre",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 78,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Sevilla - Barcelona",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "X2",
+      "probability": 88.5,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Fiorentina - Napoli",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "2,5 Alt",
+      "probability": 83.7,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Getafe - Málaga",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Málaga deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Bournemouth - Liverpool",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Leeds - Crystal Palace",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Manchester City - Sunderland",
+      "league": "Premier League",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 78.7,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Frosinone - Como",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "X2",
+      "probability": 89.9,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı.; Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Parma - Genoa",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "2,5 Alt",
+      "probability": 85.8,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Auxerre - Brest",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Leverkusen - RB Leipzig",
+      "league": "Bundesliga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 86.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Erzurumspor - Samsunspor",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Erzurumspor iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Fenerbahçe - Eyupspor",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 94.6,
+      "dataConfidence": 68,
+      "reason": null
+    },
+    {
+      "match": "Atletico Madrid - Real Madrid",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Nice - Lille",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Fulham - Manchester United",
+      "league": "Premier League",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Manchester United deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Schalke 04 - SV Elversberg",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Schalke 04 iç saha geçmişi 0/3; SV Elversberg deplasman geçmişi 0/3"
+    },
+    {
+      "match": "Juventus - Atalanta",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı."
+    },
+    {
+      "match": "Deportivo - Real Betis",
+      "league": "La Liga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Deportivo iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Villarreal - Levante",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "1X",
+      "probability": 84.5,
+      "dataConfidence": 75,
+      "reason": "Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Amed SFK - Beşiktaş",
+      "league": "Süper Lig",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 15,
+      "reason": "Amed SFK iç saha geçmişi 0/3"
+    },
+    {
+      "match": "Goztepe - Caykur Rizespor",
+      "league": "Süper Lig",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.8,
+      "dataConfidence": 68,
+      "reason": null
+    },
+    {
+      "match": "Paderborn - Hoffenheim",
+      "league": "Bundesliga",
+      "decision": "VERİ YETERSİZ",
+      "selection": null,
+      "probability": null,
+      "dataConfidence": 22,
+      "reason": "Paderborn iç saha geçmişi 0/3"
+    },
+    {
+      "match": "AC Milan - Lecce",
+      "league": "Serie A",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.3,
+      "dataConfidence": 65,
+      "reason": "Yeni motor dokunulmamış test döneminde baseline’ı geçemedi. Standart Poisson ve Elo kullanıldı.; Dixon–Coles ve Elo modelleri ciddi biçimde çelişiyor."
+    },
+    {
+      "match": "Marseille - PSG",
+      "league": "Ligue 1",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 77.9,
+      "dataConfidence": 75,
+      "reason": null
+    },
+    {
+      "match": "Valencia - Real Sociedad",
+      "league": "La Liga",
+      "decision": "GÜÇLÜ SEÇENEK",
+      "selection": "İkinci yarı 0,5 Üst",
+      "probability": 81.1,
+      "dataConfidence": 75,
+      "reason": null
+    }
+  ],
+  "coupon": {
+    "type": "standard",
+    "generatedAt": "2026-09-06T20:05:27.330Z",
+    "analyzed": 129,
+    "eligible": 95,
+    "notSelected": 90,
+    "eliminated": 34,
+    "eliminationReasons": {
+      "Uygun geçmiş veri yok": 34
+    },
+    "picks": [
+      {
+        "matchId": "espn:401884790",
+        "home": "Bayern Munich",
+        "away": "Union Berlin",
+        "date": "2026-09-18T18:30:00.000Z",
+        "selection": "1X",
+        "confidence": 97,
+        "dataConfidence": 75,
+        "reason": "Ev sahibinin iç saha, rakibin deplasman verileri ev sahibi yenilmezliğini öne çıkarıyor.",
+        "lineupConfirmed": false,
+        "sources": []
+      },
+      {
+        "matchId": "espn:401888293",
+        "home": "Galatasaray",
+        "away": "Kocaelispor",
+        "date": "2026-09-13T17:00:00.000Z",
+        "selection": "1X",
+        "confidence": 96.8,
+        "dataConfidence": 63,
+        "reason": "Ev sahibinin iç saha, rakibin deplasman verileri ev sahibi yenilmezliğini öne çıkarıyor.",
+        "lineupConfirmed": false,
+        "sources": [
+          "Transfermarkt"
+        ]
+      },
+      {
+        "matchId": "espn:401888287",
+        "home": "Fenerbahçe",
+        "away": "Eyupspor",
+        "date": "2026-09-20T14:00:00.000Z",
+        "selection": "1X",
+        "confidence": 94.6,
+        "dataConfidence": 68,
+        "reason": "Ev sahibinin iç saha, rakibin deplasman verileri ev sahibi yenilmezliğini öne çıkarıyor.",
+        "lineupConfirmed": false,
+        "sources": [
+          "Transfermarkt"
+        ]
+      },
+      {
+        "matchId": "espn:401874752",
+        "home": "Frosinone",
+        "away": "Como",
+        "date": "2026-09-20T13:00:00.000Z",
+        "selection": "X2",
+        "confidence": 89.9,
+        "dataConfidence": 65,
+        "reason": "Deplasman takımının dış saha verileri ev sahibi galibiyetine karşı daha güçlü.",
+        "lineupConfirmed": false,
+        "sources": []
+      },
+      {
+        "matchId": "espn:401874933",
+        "home": "Como",
+        "away": "Parma",
+        "date": "2026-09-14T16:30:00.000Z",
+        "selection": "1X",
+        "confidence": 89.5,
+        "dataConfidence": 65,
+        "reason": "Ev sahibinin iç saha, rakibin deplasman verileri ev sahibi yenilmezliğini öne çıkarıyor.",
+        "lineupConfirmed": false,
+        "sources": []
+      }
+    ],
+    "complete": true,
+    "headline": "En güçlü 5 seçenek bulundu",
+    "warning": "Kesin maç veya garanti sonuç yoktur; liste yalnız istatistiksel değerlendirmedir."
+  },
+  "providers": [
+    {
+      "name": "espn",
+      "leagueId": 203,
+      "leagueName": "Süper Lig",
+      "count": 20
+    },
+    {
+      "name": "espn",
+      "leagueId": 39,
+      "leagueName": "Premier League",
+      "count": 20
+    },
+    {
+      "name": "espn",
+      "leagueId": 140,
+      "leagueName": "La Liga",
+      "count": 31
+    },
+    {
+      "name": "espn",
+      "leagueId": 78,
+      "leagueName": "Bundesliga",
+      "count": 18
+    },
+    {
+      "name": "espn",
+      "leagueId": 135,
+      "leagueName": "Serie A",
+      "count": 22
+    },
+    {
+      "name": "espn",
+      "leagueId": 61,
+      "leagueName": "Ligue 1",
+      "count": 18
+    }
+  ],
+  "sourceWarnings": [],
+  "sourceErrors": []
+}

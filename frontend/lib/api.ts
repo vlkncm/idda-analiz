@@ -42,3 +42,8 @@ export async function getMatchPrediction(id: string): Promise<Record<string, unk
   const response = await fetch(`${API_URL}/matches/${id}/prediction`, { cache: "no-store" });
   return response.ok ? response.json() : null;
 }
+
+export async function getGlobalBetting(id: string): Promise<Record<string, unknown> | null> {
+  const response = await fetch(`${API_URL}/matches/${id}/global-betting`, { cache: "no-store" });
+  return response.ok ? response.json() : null;
+}

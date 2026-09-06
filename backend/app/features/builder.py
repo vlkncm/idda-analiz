@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from math import exp, log
+from math import exp, log, nan
 
 from app.modeling.market import remove_vig
 
@@ -159,8 +159,10 @@ class FeatureBuilder:
             output[f"form_{window}_goals_for"] = weighted_for / divisor
             output[f"form_{window}_goals_against"] = weighted_against / divisor
             output[f"form_{window}_over25_rate"] = overs / len(sample) if sample else 0.0
-            output[f"form_{window}_xg"] = xg_for / xg_count if xg_count else 0.0
-            output[f"form_{window}_xga"] = xg_against / xg_count if xg_count else 0.0
+            # Missing xG is not zero production: NaN lets the model imputer use
+            # the accompanying missing indicator without claiming no chances.
+            output[f"form_{window}_xg"] = xg_for / xg_count if xg_count else nan
+            output[f"form_{window}_xga"] = xg_against / xg_count if xg_count else nan
             output[f"form_{window}_xg_missing"] = float(xg_count == 0)
         venue = split[-10:]
         scored = [m.home_goals if home_split else m.away_goals for m in venue]
@@ -185,10 +187,10 @@ class FeatureBuilder:
         return output
 
     def _h2h(self, home: str, away: str, as_of: datetime, history: list[HistoricalMatch]) -> dict[str, float]:
-        cutoff = as_of - timedelta(days=3 * 365)
+        cutoff = as_of - timedelta(days=2 * 365)
         matches = [m for m in history if m.kickoff_at >= cutoff and {m.home_team, m.away_team} == {home, away}][-5:]
         if not matches:
-            return {"h2h_home_points": 0.0, "h2h_matches": 0.0}
+            return {"h2h_home_points": nan, "h2h_matches": 0.0}
         points = 0.0
         for match in matches:
             home_goals = match.home_goals if match.home_team == home else match.away_goals

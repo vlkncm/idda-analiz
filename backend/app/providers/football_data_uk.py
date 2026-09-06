@@ -8,7 +8,7 @@ import re
 import time
 import unicodedata
 from collections.abc import Callable
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 import httpx
 
@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 LEAGUES = {
     "TR-SL": {"division": "T1", "name": "Süper Lig", "country": "TR", "timezone": "Europe/Istanbul"},
     "EN-PL": {"division": "E0", "name": "Premier League", "country": "GB", "timezone": "Europe/London"},
+    "ES-LL": {"division": "SP1", "name": "La Liga", "country": "ES", "timezone": "Europe/Madrid"},
     "DE-BL": {"division": "D1", "name": "Bundesliga", "country": "DE", "timezone": "Europe/Berlin"},
     "IT-SA": {"division": "I1", "name": "Serie A", "country": "IT", "timezone": "Europe/Rome"},
     "FR-L1": {"division": "F1", "name": "Ligue 1", "country": "FR", "timezone": "Europe/Paris"},
@@ -141,7 +142,9 @@ class FootballDataUkProvider:
             over25_odds=over, under25_odds=under, home_shots=_number(raw, "HS", int), away_shots=_number(raw, "AS", int),
             home_shots_on_target=_number(raw, "HST", int), away_shots_on_target=_number(raw, "AST", int), home_corners=_number(raw, "HC", int), away_corners=_number(raw, "AC", int),
             home_yellow_cards=_number(raw, "HY", int), away_yellow_cards=_number(raw, "AY", int), home_red_cards=_number(raw, "HR", int), away_red_cards=_number(raw, "AR", int),
-            odds_captured_at=kickoff - timedelta(seconds=1),
+            # Football-Data CSV exposes opening/closing prices but no exact
+            # capture timestamp. Never fabricate one for point-in-time models.
+            odds_captured_at=None,
         )
 
     def get_matches(self, league_code: str, season: str) -> list[MatchRecord]:

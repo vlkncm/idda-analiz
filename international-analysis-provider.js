@@ -1,7 +1,35 @@
-const { predictMatchResult } = require('./analyzer');
+'use strict';
+
 const { fetchLeagueHistory } = require('./international-provider');
-function key(name=''){return name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
-function same(a,b){const x=key(a),y=key(b);return x&&y&&(x.includes(y)||y.includes(x))}
-function teamStats(rows,name,venue){const selected=rows.filter(row=>(same(row.home,name)||same(row.away,name))&&(venue==='home'?same(row.home,name):same(row.away,name))).slice(-10);let wins=0,draws=0,losses=0,gf=0,ga=0,over=0,btts=0,first=0;for(const row of selected){const home=same(row.home,name),a=home?row.home_score:row.away_score,b=home?row.away_score:row.home_score,half=home?row.home_ht:row.away_ht;gf+=a;ga+=b;first+=half;a>b?wins++:a<b?losses++:draws++;if(a+b>2)over++;if(a>0&&b>0)btts++}const n=selected.length||1;return{played:selected.length,wins,draws,losses,goalsForAvg:+(gf/n).toFixed(2),goalsAgainstAvg:+(ga/n).toFixed(2),firstHalfAvg:+(first/n).toFixed(2),secondHalfAvg:+((gf-first)/n).toFixed(2),over25:Math.round(over/n*100),btts:Math.round(btts/n*100),form:selected.map(row=>{const home=same(row.home,name),a=home?row.home_score:row.away_score,b=home?row.away_score:row.home_score;return a>b?'W':a<b?'L':'D'}).join('')}}
-async function internationalAnalysis(match){const rows=await fetchLeagueHistory(match.leagueId),home=teamStats(rows,match.home,'home'),away=teamStats(rows,match.away,'away'),shared=rows.filter(row=>(same(row.home,match.home)&&same(row.away,match.away))||(same(row.home,match.away)&&same(row.away,match.home))).slice(-10);let homeWins=0,awayWins=0,draws=0;for(const row of shared){if(row.home_score===row.away_score)draws++;else{const winner=row.home_score>row.away_score?row.home:row.away;same(winner,match.home)?homeWins++:awayWins++}}const goals=shared.map(row=>row.home_score+row.away_score),h2h={played:shared.length,homeWins,draws,awayWins,goalsAvg:goals.length?+(goals.reduce((a,b)=>a+b,0)/goals.length).toFixed(2):0,over25:goals.length?Math.round(goals.filter(x=>x>2).length/goals.length*100):0},homeAdvantage=Math.max(25,Math.min(75,Math.round(52+(home.wins-away.wins)*4+(home.goalsForAvg-away.goalsForAvg)*6))),over25=Math.round((home.over25+away.over25+(h2h.played?h2h.over25:(home.over25+away.over25)/2))/3),scores={homeAdvantage,over25,btts:Math.round((home.btts+away.btts)/2),firstHalf:Math.round(Math.min(100,(home.firstHalfAvg+away.firstHalfAvg)/3*100)),secondHalf:Math.round(Math.min(100,(home.secondHalfAvg+away.secondHalfAvg)/3.4*100)),confidence:home.played>=2&&away.played>=2?72:home.played&&away.played?62:45};return{free:true,home,away,h2h,injuries:{home:[],away:[]},players:{home:[],away:[]},referee:{home:{referee:'Veri bulunamadı',matches:0,wins:0,draws:0,losses:0},away:{referee:'Veri bulunamadı',matches:0,wins:0,draws:0,losses:0}},scores,predictedResult:predictMatchResult({scores,home,away,h2h}),verdict:`${homeAdvantage>=58?'Ev sahibi':homeAdvantage<=42?'Deplasman':'Dengeli maç'}; 2,5 üst eğilimi %${over25}.`,generatedAt:new Date().toISOString(),limitations:['Ücretsiz TheSportsDB geçmiş verisiyle hesaplandı.']}}
-module.exports={internationalAnalysis,teamStats};
+const { sameTeam } = require('./fixture-providers/model');
+const { analyzeMatch: runProbabilityEngine } = require('./probability-engine');
+
+function teamMatches(rows, name, venue = 'all') {
+  return rows.filter(row => venue === 'home' ? sameTeam(row.home, name) : venue === 'away' ? sameTeam(row.away, name) : sameTeam(row.home, name) || sameTeam(row.away, name))
+    .sort((left, right) => new Date(left.playedAt || left.date || 0) - new Date(right.playedAt || right.date || 0)).slice(-10);
+}
+function teamStats(rows, name, venue = 'all') {
+  const selected = teamMatches(rows, name, venue);
+  if (!selected.length) return { played: 0, wins: 0, draws: 0, losses: 0, goalsForAvg: null, goalsAgainstAvg: null, over25: null, btts: null, form: '' };
+  let wins = 0, draws = 0, losses = 0, goalsFor = 0, goalsAgainst = 0, over = 0, btts = 0;
+  for (const row of selected) {
+    const isHome = sameTeam(row.home, name), scored = Number(isHome ? row.home_score : row.away_score), conceded = Number(isHome ? row.away_score : row.home_score);
+    goalsFor += scored; goalsAgainst += conceded; scored > conceded ? wins++ : scored < conceded ? losses++ : draws++;
+    if (scored + conceded >= 3) over++; if (scored > 0 && conceded > 0) btts++;
+  }
+  return { played: selected.length, wins, draws, losses, goalsForAvg: goalsFor / selected.length, goalsAgainstAvg: goalsAgainst / selected.length, over25: 100 * over / selected.length, btts: 100 * btts / selected.length, form: selected.map(row => { const isHome = sameTeam(row.home, name), a = Number(isHome ? row.home_score : row.away_score), b = Number(isHome ? row.away_score : row.home_score); return a > b ? 'W' : a < b ? 'L' : 'D'; }).join('') };
+}
+function h2hStats(rows, homeName, awayName, asOf = new Date()) {
+  const cutoff = new Date(asOf).getTime() - 2 * 365.25 * 86400000;
+  const selected = rows.filter(row => row.playedAt && new Date(row.playedAt).getTime() >= cutoff && ((sameTeam(row.home, homeName) && sameTeam(row.away, awayName)) || (sameTeam(row.home, awayName) && sameTeam(row.away, homeName))));
+  return selected.length ? { played: selected.length } : null;
+}
+async function internationalAnalysis(match, { fetchHistory = fetchLeagueHistory } = {}) {
+  if (!match || !Number.isFinite(Number(match.leagueId))) throw new Error('Analiz için lig kimliği gerekli');
+  const rows = await fetchHistory(Number(match.leagueId), new Date(match.kickoffUtc || match.date));
+  const homeFound = rows.some(row => sameTeam(row.home, match.home) || sameTeam(row.away, match.home)), awayFound = rows.some(row => sameTeam(row.home, match.away) || sameTeam(row.away, match.away));
+  const output = runProbabilityEngine({ match, rows });
+  return { ...output, free: true, leagueId: Number(match.leagueId), historySources: [...new Set(rows.map(row => row.source).filter(Boolean))], matchedTeams: { home: homeFound ? match.home : null, away: awayFound ? match.away : null }, limitations: [...(output.decisionReasons || []), ...(output.xg?.message ? [output.xg.message] : [])] };
+}
+
+module.exports = { internationalAnalysis, teamMatches, teamStats, h2hStats };

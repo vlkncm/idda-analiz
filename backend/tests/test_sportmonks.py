@@ -52,8 +52,8 @@ def test_429_uses_retry_after_without_leaking_token() -> None:
 
 
 def test_league_discovery_validates_name_and_country() -> None:
-    rows = [{"id": index, "name": name, "country": {"name": country}} for index, (name, country) in enumerate([("Süper Lig", "Turkey"), ("Premier League", "England"), ("Bundesliga", "Germany"), ("Serie A", "Italy"), ("Ligue 1", "France")], 1)]
-    assert {code for code, _ in discover_target_leagues(rows)} == {"TR-SL", "EN-PL", "DE-BL", "IT-SA", "FR-L1"}
+    rows = [{"id": index, "name": name, "country": {"name": country}} for index, (name, country) in enumerate([("Süper Lig", "Turkey"), ("Premier League", "England"), ("La Liga", "Spain"), ("Bundesliga", "Germany"), ("Serie A", "Italy"), ("Ligue 1", "France")], 1)]
+    assert {code for code, _ in discover_target_leagues(rows)} == {"TR-SL", "EN-PL", "ES-LL", "DE-BL", "IT-SA", "FR-L1"}
     with pytest.raises(ProviderRequestError, match="bulunamadı"):
         discover_target_leagues(rows[:-1])
 

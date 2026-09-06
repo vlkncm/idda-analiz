@@ -1,5 +1,44 @@
 # Ücretsiz Avrupa Futbol Olasılık Motoru
 
+## Production analiz mimarisi
+
+Windows/Electron uygulamasının tek production analiz motoru kökteki
+`probability-engine.js` modülüdür. Akış `server.js` üzerinden
+`free-provider.js` / `international-analysis-provider.js` ile bu motora gider.
+Python/FastAPI kodu masaüstü runtime'ında başlatılmaz; araştırma, veri senkronu ve
+offline model karşılaştırma aracıdır. `analyzer.js` yalnız `legacy` karşılaştırma
+uyumluluğu için tutulur ve production önerisi üretmez.
+
+Motor; tarih-noktalı veri filtresi, 180 günlük yarı ömür, iç/dış saha güçleri,
+0–5 normalize Dixon–Coles matrisi, kronolojik Elo ve train/validation/test
+ayrımı kullanır. Validation döneminde ensemble ağırlıkları ile sıcaklık
+kalibrasyonu seçilir. Yeni motor dokunulmamış test döneminde lig frekansı
+baseline'ını log loss ve Brier ölçütlerinde geçmezse standart Poisson/Elo
+hesabıyla devam edilir ve bu sınır açıkça belirtilir. Yalnız uygun ev/deplasman
+örneklerinden biri 3 maçın altındaysa `VERİ YETERSİZ` gösterilir. xG, sakatlık
+önemi, hakem veya güncel oran yoksa değer uydurulmaz ve alan modelden çıkarılır.
+
+Gerçek veri doğrulama durumu ve bilinen sınırlar için
+[`MODEL_VALIDATION_REPORT.md`](MODEL_VALIDATION_REPORT.md) dosyasına bakın.
+
+## Güncel Electron/Node fikstür uygulaması
+
+Varsayılan `npm start` komutu kök dizindeki Node sunucusunu çalıştırır. Güncel
+fikstürlerin birincil kaynağı ESPN'in anahtarsız genel futbol verisidir. Opsiyonel
+anahtarlarınızı gerçek `.env` dosyanıza yazın; anahtar tarayıcıya gönderilmez ve loglanmaz:
+
+```powershell
+Copy-Item .env.example .env
+# ESPN için anahtar gerekmez; opsiyonel kaynak anahtarları boş kalabilir
+npm test
+npm start
+```
+
+Uygulama `http://127.0.0.1:4173` adresinde açılır. Fallback sırası Süper Lig için
+ESPN, TheSportsDB, TFF ve opsiyonel API-Football; beş büyük Avrupa ligi için ESPN,
+TheSportsDB, football-data.org, Football-Data.co.uk ve opsiyonel API-Football şeklindedir. Demo maçlar
+production fikstür akışında kullanılmaz.
+
 Bu sürüm aylık veri maliyeti **0** olacak şekilde çalışır. Ana kaynak
 [Football-Data.co.uk](https://www.football-data.co.uk/data.php) ücretsiz CSV
 dosyalarıdır. Türkiye `T1`, İngiltere `E0`, Almanya `D1`, İtalya `I1` ve Fransa
@@ -57,9 +96,11 @@ yazar, pre-match Elo geçmişini/feature'ları oluşturur, walk-forward training
 backtest yapar, uygun upcoming maçlar varsa tahmin üretir. CSV kaynağı geçici
 olarak erişilemiyorsa yeniden çalıştırılabilir; duplicate oluşturmaz.
 
-Football-Data kolonları eksik olduğunda NULL saklanır. `C` içeren closing odds
-kolonları önceliklidir; oranlar vig temizlendikten sonra modele girer. Odds
-snapshot zamanı kickoff öncesi tutulur ve leakage testi bunu denetler.
+Football-Data kolonları eksik olduğunda NULL saklanır. CSV'deki `C` kolonları
+closing fiyatı taşısa da kesin snapshot zamanı yayımlanmadığı için bu oranlar
+point-in-time modele veya value hesabına alınmaz. Ayrı bir sağlayıcı gerçek
+`captured_at < kickoff` zamanı verdiğinde oranlar vig temizlendikten sonra modele
+girebilir; leakage testi bu koşulu denetler.
 
 Veriler Football-Data.co.uk tarafından maç tahmini/araştırma amacıyla ücretsiz
 sunulur. Kaynağa atıf korunmalı ve yeniden dağıtım/ticari kullanım öncesinde
@@ -260,14 +301,14 @@ Herhangi bir paket kurulumu gerekmez. Node.js 20 veya daha yeni bir sürüm yete
 
 ## Veri kaynakları
 
-Güncel Süper Lig fikstürü TFF'nin resmî sayfasından, takım geçmişi ve performans verileri SportScore ücretsiz API'sinden alınır. Beş büyük Avrupa liginin fikstürleri TheSportsDB ücretsiz API'sinden anahtarsız yüklenir.
+Altı ligin güncel fikstürü önce ESPN'den alınır; lig bazında başarısız olursa TheSportsDB ve mevcut ücretsiz kaynaklara geçilir. Geçmiş analizleri Football-Data.co.uk CSV'leri, bu verinin açık GitHub arşivi, TheSportsDB ve Süper Lig için OpenFootball kayıtları besler.
 
-Ücretsiz planın günlük kotasını korumak için yanıtlar varsayılan olarak 6 saat önbelleğe alınır. `Verileri yenile` düğmesi önbelleği atlar ve altı API isteği kullanır.
+Yanıtlar varsayılan olarak 360 dakika önbelleğe alınır. `Maçları Güncelle` düğmesi önbelleği kontrollü yeniler; 60 saniyelik hız sınırı yinelenen istekleri engeller. Güncel veri alınamazsa yalnız aynı lig, tarih aralığı ve şema sürümüne ait son doğrulanmış cache kullanılabilir.
 
 ## Mevcut aşama
 
 - Altı lig için haftalık fikstür
-- Demo veri modu
+- Production akışında demo veri yoktur; kaynaklar başarısızsa açık hata gösterilir
 - TheSportsDB bağlantısı
 - Dosya tabanlı önbellek
 - Lig filtreleri ve maç ayrıntısı

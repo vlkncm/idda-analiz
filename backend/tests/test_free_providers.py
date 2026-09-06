@@ -23,7 +23,7 @@ def test_real_football_data_csv_columns_are_parsed() -> None:
     assert row.home_team_name == "Galatasaray"
     assert row.home_shots == 14 and row.away_shots_on_target == 3
     assert row.home_odds == 1.8 and row.over25_odds == 1.75
-    assert row.odds_captured_at < row.kickoff_at
+    assert row.odds_captured_at is None
 
 
 def test_date_and_team_normalization() -> None:
@@ -35,10 +35,10 @@ def test_free_sync_is_idempotent_and_stores_stats_and_odds(session) -> None:
     client = httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(200, text=CSV)))
     service = FreeDataSyncService(session, FootballDataUkProvider(client=client), history_seasons=1)
     first, second = service.sync(), service.sync()
-    assert first.leagues == second.leagues == 5
-    assert session.scalar(select(func.count()).select_from(Match)) == 5
-    assert session.scalar(select(func.count()).select_from(MatchTeamStats)) == 10
-    assert session.scalar(select(func.count()).select_from(OddsSnapshot)) == 25
+    assert first.leagues == second.leagues == 6
+    assert session.scalar(select(func.count()).select_from(Match)) == 6
+    assert session.scalar(select(func.count()).select_from(MatchTeamStats)) == 12
+    assert session.scalar(select(func.count()).select_from(OddsSnapshot)) == 0
 
 
 def test_optional_org_provider_skips_without_key() -> None:

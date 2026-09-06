@@ -1,6 +1,6 @@
 from app.models.football import League, Match, Season, Team, TeamSeason
 from app.models.prediction import ModelVersion, Prediction
-from app.models.operational import BacktestRun, EloSnapshot, EnsembleWeight, FeatureSnapshot, Lineup, MatchTeamStats, ModelMetric, OddsSnapshot, Player, PlayerAbsence, SyncState
+from app.models.operational import BacktestRun, BettingSplit, EloSnapshot, EnsembleWeight, FeatureSnapshot, Lineup, MatchTeamStats, ModelMetric, OddsSnapshot, Player, PlayerAbsence, SyncState
 
 __all__ = [
     "League",
@@ -8,6 +8,7 @@ __all__ = [
     "ModelVersion",
     "Prediction",
     "BacktestRun",
+    "BettingSplit",
     "EloSnapshot",
     "EnsembleWeight",
     "FeatureSnapshot",

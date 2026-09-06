@@ -19,6 +19,8 @@ from app.models.operational import MatchTeamStats, OddsSnapshot
 from app.providers.football_data_uk import FootballDataUkProvider
 from app.services.free_data_sync import FreeDataSyncService
 from app.services.automation import PredictionAutomationService
+from app.providers.the_odds_api import TheOddsApiProvider
+from app.services.global_betting import GlobalBettingService
 
 router = APIRouter(prefix="/api/v1")
 
@@ -102,6 +104,19 @@ def match_detail(match_id: int, db: Session = Depends(get_db)) -> dict:
     if row is None:
         raise HTTPException(404, "match not found")
     return _match_response(row)
+
+
+@router.get("/matches/{match_id}/global-betting")
+def match_global_betting(match_id: int, db: Session = Depends(get_db)) -> dict:
+    row = db.scalar(select(Match).options(joinedload(Match.home_team), joinedload(Match.away_team), joinedload(Match.league)).where(Match.id == match_id))
+    if row is None:
+        raise HTTPException(404, "match not found")
+    settings = get_settings()
+    provider = TheOddsApiProvider(settings.odds_api_key, settings.odds_api_base_url, settings.odds_api_regions, settings.odds_match_tolerance_minutes)
+    service = GlobalBettingService(db, provider, settings)
+    analysis = service.analysis(row)
+    analysis["features"] = service.feature_payload(analysis)
+    return analysis
 
 
 @router.get("/matches/{match_id}/prediction")

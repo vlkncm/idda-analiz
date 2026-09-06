@@ -13,8 +13,8 @@ from app.services.settlement import settle_match
 
 
 logger = logging.getLogger(__name__)
-COUNTRY_CODES = {"Turkey": "TR", "England": "GB", "Germany": "DE", "Italy": "IT", "France": "FR"}
-TIMEZONES = {"TR-SL": "Europe/Istanbul", "EN-PL": "Europe/London", "DE-BL": "Europe/Berlin", "IT-SA": "Europe/Rome", "FR-L1": "Europe/Paris"}
+COUNTRY_CODES = {"Turkey": "TR", "England": "GB", "Spain": "ES", "Germany": "DE", "Italy": "IT", "France": "FR"}
+TIMEZONES = {"TR-SL": "Europe/Istanbul", "EN-PL": "Europe/London", "ES-LL": "Europe/Madrid", "DE-BL": "Europe/Berlin", "IT-SA": "Europe/Rome", "FR-L1": "Europe/Paris"}
 
 
 @dataclass(slots=True)

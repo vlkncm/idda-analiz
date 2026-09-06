@@ -3,13 +3,13 @@ from __future__ import annotations
 import hashlib
 import time
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import httpx
 
 from app.providers.base import MatchRecord, TeamRecord
 
-COMPETITIONS = {"EN-PL": "PL", "DE-BL": "BL1", "IT-SA": "SA", "FR-L1": "FL1"}
+COMPETITIONS = {"EN-PL": "PL", "ES-LL": "PD", "DE-BL": "BL1", "IT-SA": "SA", "FR-L1": "FL1"}
 
 
 class FootballDataOrgProvider:
@@ -17,11 +17,12 @@ class FootballDataOrgProvider:
 
     name = "football-data.org"
 
-    def __init__(self, api_key: str | None, base_url: str = "https://api.football-data.org/v4", client: httpx.Client | None = None, sleep: Callable[[float], None] = time.sleep):
+    def __init__(self, api_key: str | None, base_url: str = "https://api.football-data.org/v4", client: httpx.Client | None = None, sleep: Callable[[float], None] = time.sleep, lookahead_days: int = 14):
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
         self.client = client or httpx.Client(timeout=30, headers={"X-Auth-Token": api_key or ""})
         self.sleep = sleep
+        self.lookahead_days = max(1, min(31, lookahead_days))
 
     @property
     def enabled(self) -> bool:
@@ -63,8 +64,10 @@ class FootballDataOrgProvider:
     def get_upcoming_matches(self, league_code: str) -> list[MatchRecord]:
         if league_code not in COMPETITIONS or not self.enabled:
             return []
-        rows = self._get(f"competitions/{COMPETITIONS[league_code]}/matches", {"status": "SCHEDULED"}).get("matches", [])
-        season = str(datetime.now(timezone.utc).year)
+        now = datetime.now(timezone.utc)
+        rows = self._get(f"competitions/{COMPETITIONS[league_code]}/matches", {"dateFrom": now.date().isoformat(), "dateTo": (now + timedelta(days=self.lookahead_days)).date().isoformat()}).get("matches", [])
+        start = now.year if now.month >= 7 else now.year - 1
+        season = f"{start}/{start + 1}"
         return [self.normalize_match(row, league_code, season) for row in rows]
 
     def get_teams(self, league_code: str, season: str) -> list[TeamRecord]:
